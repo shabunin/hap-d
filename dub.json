@@ -1,0 +1,12 @@
+{
+	"authors": [
+		"va.shabunin"
+	],
+	"copyright": "Copyright © 2020, Vladimir Shabunin",
+	"dependencies": {
+		"secured": "~>2.0.2"
+	},
+	"description": "Apple HomeKit Accessory Protocol for D",
+	"license": "MIT",
+	"name": "hap-d"
+}
