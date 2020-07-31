@@ -14,8 +14,9 @@ Works and specs I was guided by:
 ## mdns:
 
 1. https://github.com/futomi/node-dns-sd
-2. https://tools.ietf.org/html/rfc1035
-3. https://tools.ietf.org/html/rfc6763
+2. https://github.com/hashicorp/mdns
+3. https://tools.ietf.org/html/rfc1035
+4. https://tools.ietf.org/html/rfc6763
 
 ## HAP
 
