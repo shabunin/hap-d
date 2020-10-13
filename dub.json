@@ -4,7 +4,7 @@
 	],
 	"copyright": "Copyright © 2020, Vladimir Shabunin",
 	"dependencies": {
-		"secured": "~>2.0.2"
+		"libsodiumd": "~>0.1.1"
 	},
 	"description": "Apple HomeKit Accessory Protocol for D",
 	"license": "MIT",

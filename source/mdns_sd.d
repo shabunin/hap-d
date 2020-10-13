@@ -69,7 +69,6 @@ class DnsSD {
           ifaceStr ~= *i;
           i+= 1;
         }
-        writeln("host: ", host);
         int hlen;
         for (int ci = 0; ci < host.length; ci += 1) {
           if (host[ci] != cast(char) 0x00) continue;
@@ -77,6 +76,7 @@ class DnsSD {
         }
         string hostStr = cast(string) host;
         hostStr.length = hlen;
+        writeln("host: ", hostStr);
         if (iface == "" && hostStr != "127.0.0.1") {
           ip_v4 ~= hostStr;
         }
@@ -324,6 +324,8 @@ class DnsSD {
       string instance, string service, string domain,
       string hostname, ushort port, string txt) {
 
+    writeln("registering service advertising: ");
+    writeln(instance ~ "." ~ service ~ "." ~ domain);
     MdnsService ms;
     ms.instance = instance;
     ms.service = service;

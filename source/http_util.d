@@ -2,11 +2,7 @@
 module http_util;
 
 import std.array : Appender;
-import std.conv : to, ConvException;
-import std.datetime : DateTime;
-import std.json : JSONValue;
-import std.regex : ctRegex;
-import std.string : toUpper, toLower, split, join, strip, indexOf;
+import std.string : split, join, strip, indexOf;
 
 
 private enum crlf = "\r\n";

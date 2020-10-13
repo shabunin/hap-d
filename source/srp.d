@@ -24,17 +24,6 @@ import std.string;
 
 import srp_params;
 
-ubyte[] gen_key(int size) {
-  auto rnd = MinstdRand(142);
-
-  ubyte[] arr;
-  arr.length = size;
-  for (int i = 0; i < size; i += 1) {
-    arr[i] = rnd.uniform!ubyte();
-  }
-  return arr;
-}
-  
 BigInt buf2bi(ubyte[] buf) {
     return BigInt("0x" ~ buf.toHexString);
 }
