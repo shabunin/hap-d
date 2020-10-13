@@ -23,7 +23,7 @@ Works and specs I was guided by:
 1. https://github.com/homebridge/HAP-NodeJS/blob/master/src/lib/HAPServer.ts
 2. https://github.com/ikalchev/HAP-python/blob/dev/pyhap/hap_server.py
 
-## Used libraries
+## Dependencies
 
-1. https://github.com/LightBender/SecureD
-2. https://github.com/yannick/tweetnacl.d
+1. libsodium
+2. libsodiumd bindings
