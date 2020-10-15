@@ -561,7 +561,6 @@ ubyte[] serializeRR(Record rec) {
   buf.write!ushort(header.authorities, offset); offset += 2;
   buf.write!ushort(header.additionals, offset); offset += 2;
 
-  // TODO: write label, write RData
   auto current_record_item = 0;
   auto total_record_items = 
     header.questions + header.answers + header.authorities + header.additionals;
@@ -573,7 +572,6 @@ ubyte[] serializeRR(Record rec) {
 
   while(current_record_item < total_record_items) {
     if (questions_left > 0) {
-      // TODO: write question
       auto question = rec.questions[header.questions - questions_left];
       buf ~= serializeLabel(question.label);
       offset = to!int(buf.length);
