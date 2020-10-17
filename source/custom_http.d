@@ -8,11 +8,51 @@ import std.digest : toHexString;
 import std.socket : InternetAddress, Socket, SocketException, SocketSet, TcpSocket;
 import std.stdio : writeln, writefln;
 
-import http_util;
+import std.array : Appender;
+import std.string : split, join, strip, indexOf;
+
+
+private enum crlf = "\r\n";
+
+public string encodeHTTP(string status, string[string] headers, string content) {
+  Appender!string ret;
+  ret.put(status);
+  ret.put(crlf);
+  foreach(k, v ; headers) {
+    ret.put(k);
+    ret.put(": ");
+    ret.put(v);
+    ret.put(crlf);
+  }
+  ret.put(crlf); // empty line
+  ret.put(content);
+  return ret.data;
+}
+
+public bool decodeHTTP(string str, ref string status, ref string[string] headers, ref string content) {
+  string[] spl = str.split(crlf);
+  if(spl.length > 1) {
+    status = spl[0];
+    size_t index;
+    while(++index < spl.length && spl[index].length) { // read until empty line
+      auto s = spl[index].split(":");
+      if(s.length >= 2) {
+        headers[s[0].strip] = s[1..$].join(":").strip;
+      } else {
+        return false; // invalid header
+      }
+    }
+    content = (index + 1 < spl.length) ? join(spl[index + 1..$], crlf) : string.init;
+    return true;
+  } else {
+    return false;
+  }
+}
+
 
 enum BUFF_SIZE=2048;
 
-class ListenerSocket {
+class SocketListener {
   ushort max_connections;
   TcpSocket listener;
   SocketSet socketSet;
@@ -110,7 +150,7 @@ class ListenerSocket {
   }
 }
 
-class CustomHTTP: ListenerSocket {
+class CustomHTTP: SocketListener {
   bool[string] encMode;
   // simple constructor
   this(ushort port) {
@@ -157,11 +197,9 @@ class CustomHTTP: ListenerSocket {
     }
   }
 
-  public void sendHttpResponse(string addr, string content, string ctype) {
-    string status = "HTTP/1.1 200 OK";
-    string[string] headers;
-    headers["Content-Type"] = ctype;
-    headers["Content-Length"] = to!string(content.length);
+  public void sendHttpResponse(string status, string[string] headers,
+					string addr, string content, string ctype) {
+    
     string message = encodeHTTP(status, headers, content);
     for (int i = 0; i < addrs.length; i += 1) {
       if (addrs[i] == addr) {
@@ -169,6 +207,13 @@ class CustomHTTP: ListenerSocket {
         break;
       }
     }
+  };
+  public void sendHttpResponse(string addr, string content, string ctype) {
+    string status = "HTTP/1.1 200 OK";
+    string[string] headers;
+    headers["Content-Type"] = ctype;
+    headers["Content-Length"] = to!string(content.length);
+    return sendHttpResponse(status, headers, addr, content, ctype);
   };
   public void sendHttpResponse(string addr, ubyte[] content, string ctype) {
     return sendHttpResponse(addr, cast(string)content, ctype);

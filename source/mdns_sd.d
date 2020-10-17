@@ -1,6 +1,6 @@
 module mdns_sd;
 
-import std.algorithm: canFind;
+import std.algorithm: canFind, remove;
 import std.bitmanip;
 import std.conv;
 import std.stdio;
@@ -23,7 +23,7 @@ struct MdnsService {
   string domain;
   string hostname;
   ushort port;
-  string txt;
+  string[string] txt;
 
   string instanceAddr; // "Lightbulb 1._hap._tcp.local"
   string serviceAddr; // "_hap._tcp.local"
@@ -219,7 +219,9 @@ class DnsSD {
             rr.record_type = RecordTypes.txt;
             rr.record_class = RecordClasses.int_;
             rr.ttl = ttl;
-            rr.rdata.data = ms.txt;
+            foreach (t; ms.txt.keys) {
+			  rr.rdata.data ~= t ~ "="~ ms.txt[t] ~ "\n";
+			}
             response.answers ~= rr;
             break;
           default:
@@ -322,7 +324,7 @@ class DnsSD {
   }
   public int registerService(
       string instance, string service, string domain,
-      string hostname, ushort port, string txt) {
+      string hostname, ushort port, string[string] txt) {
 
     writeln("registering service advertising: ");
     writeln(instance ~ "." ~ service ~ "." ~ domain);
@@ -345,6 +347,12 @@ class DnsSD {
     services ~= ms;
 
     return to!int(services.length - 1);
+  }
+  public void unregisterService(int index) {
+	services = services.remove(index);
+  };
+  public void setTxtRecord(int index, string[string] txt) {
+	services[index].txt = txt;
   }
   public void publish(int idx) {
     Record rr;

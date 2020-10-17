@@ -43,7 +43,9 @@ struct HAPCharacteristic {
     }
     return j.toJSON;
   }
+  void delegate(JSONValue) onSet;
 }
+
 struct HAPService {
   string type;
   uint iid;
@@ -59,7 +61,6 @@ struct HAPService {
     return j.toJSON;
   }
 }
-
 
 struct HAPAccessory {
   uint aid;
