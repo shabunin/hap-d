@@ -6,7 +6,9 @@ import std.json;
 import std.stdio;
 import std.string;
 
-import accessories;
+import hap_structs;
+import enum_characteristics;
+import enum_services;
 import hap_server;
 
 void main(string[] args) {
@@ -51,6 +53,7 @@ void main(string[] args) {
   HAPCharacteristic lname = HAPC_Name("lamp");
   lservice.addCharacteristic(lname);
 
+  // On/Off
   HAPCharacteristic lon = HAPC_On();
   lon.onSet = (JSONValue value) {
     writeln("light set: ", value);
@@ -62,7 +65,7 @@ void main(string[] args) {
   };
   lservice.addCharacteristic(lon);
 
-  /* TODO: add support for brightness
+  // brightness characteristic
   HAPCharacteristic lbr = HAPC_Brightness();
   lbr.onSet = (JSONValue value) {
     writeln("brightness set: ", value);
@@ -72,7 +75,8 @@ void main(string[] args) {
     writeln("brightness get: ");
     return lbr.value;
   };
-  lservice.addCharacteristic(lbr); */
+  lservice.addCharacteristic(lbr); 
+  
 
   lightAcc.addService(lservice);
   server.addAccessory(lightAcc);

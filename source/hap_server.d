@@ -16,13 +16,16 @@ import std.socket;
 
 import libsodium;
 
-import accessories;
 import custom_http;
 import hkdf;
 import mdns_sd;
 import srp_params;
 import srp;
 import tlv;
+
+import hap_structs;
+import enum_characteristics;
+import enum_services;
 
 class HAPServer {
   private DnsSD advertiser;
@@ -188,33 +191,74 @@ class HAPServer {
           out_count, enc_accessoryToControllerKey);
       httpServer.sendByteResponse(client_addr, enc);
     } else if (method == "GET" && path.indexOf("/characteristics") > -1) {
-      // GET /characteristics?id=2.10 HTTP/1.1
-      uint aid, iid;
-      auto query = path.split("?")[1];
-      aid = parse!uint(query.split("=")[1].split(".")[0]);
-      iid = parse!uint(query.split("=")[1].split(".")[1]);
-      writeln("wanna know status of ", aid, "-", iid);
+      // GET /characteristics?id=2.10,2.11 HTTP/1.1
+      string[string] query;
+      auto idx = path.indexOf("?");
+      if (idx < 0) return;
+      auto queryStr = path[idx+1..$];
+      writeln("queryStr: ", queryStr);
+      auto queryArr = queryStr.split("&");
+      foreach(qi; queryArr) {
+        auto kv = qi.split("=");
+        if (kv.length != 2) continue;
+        auto k = kv[0];
+        auto v = kv[1];
+        query[k] = v;
+      }
       JSONValue j = parseJSON("{}");
-      foreach(a; accs) {
-        if (a.aid != aid) continue;
-        foreach(s;a.services) {
-          foreach(c; s.chars) {
-            if (c.iid != iid) continue;
-            writeln("characteristic value: ", c.value);
-            j["characteristics"] = parseJSON("[]");
-            j["characteristics"].array ~= parseJSON("{}");
-            j["characteristics"].array[0]["aid"] = JSONValue(aid);
-            j["characteristics"].array[0]["iid"] = JSONValue(iid);
-            if (c.onGet !is null) {
-              j["characteristics"].array[0]["value"] = c.onGet();
-            } else {
-              j["characteristics"].array[0]["value"] = c.value;
+      bool success = true;
+      foreach(k; query.keys) {
+        if (k != "id") continue;
+        auto v = query[k];
+        auto ai_ids = v.split(",");
+        foreach(ai; ai_ids) {
+          auto aid = parse!uint(ai.split(".")[0]);
+          auto iid = parse!uint(ai.split(".")[1]);
+          writeln("wanna know status of ", aid, "-", iid);
+          try {
+            auto acc = getAccessory(aid);
+            auto c = acc.findCharacteristic(iid);
+            if (("characteristics" in j) is null) {
+              j["characteristics"] = parseJSON("[]");
             }
+            JSONValue jc = parseJSON("{}");
+            jc["aid"] = JSONValue(aid);
+            jc["iid"] = JSONValue(iid);
+            if (c.onGet !is null) {
+              jc["value"] = c.onGet();
+            } else {
+              jc["value"] = c.value;
+            }
+            j["characteristics"].array ~= jc;
+          } catch(Exception e) {
+            writeln("Exception while getting characteristic value:");
+            writeln(e);
+            // push error into array
+            if (("characteristics" in j) is null) {
+              j["characteristics"] = parseJSON("[]");
+            }
+            JSONValue jc = parseJSON("{}");
+            jc["aid"] = JSONValue(aid);
+            jc["iid"] = JSONValue(iid);
+            jc["status"] = JSONValue(-70402);
+            j["characteristics"].array ~= jc;
+            success = false;
           }
         }
       }
 
-      string resStatus = "HTTP/1.1 200 OK";
+      string resStatus = "HTTP/1.1 207 Multi-Status";
+      if (success) {
+        resStatus = "HTTP/1.1 200 OK";
+      } else {
+        resStatus = "HTTP/1.1 207 Multi-Status";
+        for(int i = 0; i < j["characteristics"].array.length; i += 1) {
+          JSONValue jc = j["characteristics"].array[i];
+          if (("status" in jc) is null) {
+            j["characteristics"]["status"] = JSONValue(0);
+          }
+        }
+      }
       string[string] resHeaders; 
       resHeaders["Content-Type"] = "application/hap+json";
       string resBody = j.toJSON;
@@ -410,11 +454,6 @@ class HAPServer {
         txt["sf"] = "0";
         advertiser.setTxtRecord(serviceIndex, txt);
 
-        // call onPair callback
-        // to save keys
-        if (onPair !is null) {
-          onPair(ACC_PK, ACC_SK, iOS_PK, iOS_ID);
-        }
       }
     } else if (path == "/pair-setup") {
       ubyte[] buffer = cast(ubyte[]) content;
@@ -584,15 +623,23 @@ class HAPServer {
         // save iOS_LTPK and ID 
         iOS_PK = client_public.dup;
         iOS_ID = client_id.dup;
+
+        // call onPair callback
+        // to save keys
+        if (onPair !is null) {
+          onPair(ACC_PK, ACC_SK, iOS_PK, iOS_ID);
+        }
       }
     }
   }
   this(string iface, string acc_name, string service,
-      string domain, ushort port, string acc_model, string acc_id, string acc_pin) {
+      string domain, ushort port, string acc_model, string acc_id, string acc_pin,
+      Duration ad_interval = 5000.msecs) {
 
     this.acc_id = acc_id;
     this.acc_pin = acc_pin;
     advertiser = new DnsSD(iface);
+    interval = ad_interval; // interval to send mdns advertisement
     txt["c#"] = "1"; // configuration number. 
     txt["md"] = acc_model;
     txt["id"] = acc_id; 
@@ -628,6 +675,12 @@ class HAPServer {
   public void addAccessory(HAPAccessory acc) {
     acc.aid = to!uint(accs.length + 1);
     accs ~= acc;
+  }
+  public HAPAccessory getAccessory(uint aid) {
+    foreach(a; accs) {
+      if (a.aid == aid) return a;
+    }
+    throw new Exception("Accessory with given aid not found");
   }
   public void loop() {
     advertiser.processMessages();

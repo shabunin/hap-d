@@ -1,8 +1,10 @@
-module accessories;
+module hap_structs;
 
 import std.json;
 
-// ------------ //
+import enum_characteristics;
+import enum_services;
+
 enum HAPPermission {
   PAIRED_READ,
   PAIRED_WRITE,
@@ -10,117 +12,9 @@ enum HAPPermission {
   ADDITIONAL_AUTHORIZATION,
   TIMED_WRITE,
   HIDDEN,
+  WRITE_RESPONSE,
   NONE
 }
-
-/*=============================*/
-
-enum : HAPService {
-  HAPS_HapProtocolInfo = HAPService("A2"),
-  HAPS_Info = HAPService("3E"),
-  HAPS_LightBulb = HAPService("43"),
-}
-
-/*=============================*/
-
-HAPCharacteristic HAPC_Identify() {
-  HAPCharacteristic c;
-  c.type = "14";
-  c.value = JSONValue(null);
-  c.format = "bool";
-  c.perms = [HAPPermission.PAIRED_WRITE];
-  c.description = "Identify";
-
-  return c;
-}
-HAPCharacteristic HAPC_Manufacturer(string value) {
-  HAPCharacteristic c;
-  c.type = "20";
-  c.value = JSONValue(value);
-  c.format = "string";
-  c.perms = [HAPPermission.PAIRED_READ];
-  c.description = "Manufacturer";
-
-  return c;
-}
-HAPCharacteristic HAPC_Model(string value) {
-  HAPCharacteristic c;
-  c.type = "21";
-  c.value = JSONValue(value);
-  c.format = "string";
-  c.perms = [HAPPermission.PAIRED_READ];
-  c.description = "Model";
-
-  return c;
-}
-HAPCharacteristic HAPC_Name(string value) {
-  HAPCharacteristic c;
-  c.type = "23";
-  c.value = JSONValue(value);
-  c.format = "string";
-  c.perms = [HAPPermission.PAIRED_READ];
-  c.description = "Name";
-
-  return c;
-}
-HAPCharacteristic HAPC_SerialNumber(string value) {
-  HAPCharacteristic c;
-  c.type = "30";
-  c.value = JSONValue(value);
-  c.format = "string";
-  c.perms = [HAPPermission.PAIRED_READ];
-  c.description = "SerialNumber";
-
-  return c;
-}
-HAPCharacteristic HAPC_Version(string value) {
-  HAPCharacteristic c;
-  c.type = "37";
-  c.value = JSONValue(value);
-  c.format = "string";
-  c.perms = [HAPPermission.PAIRED_READ, HAPPermission.EVENTS];
-  c.description = "Version";
-
-  return c;
-}
-HAPCharacteristic HAPC_FirmwareRevision(string value) {
-  HAPCharacteristic c;
-  c.type = "52";
-  c.value = JSONValue(value);
-  c.format = "string";
-  c.perms = [HAPPermission.PAIRED_READ];
-  c.description = "FirmwareRevision";
-
-  return c;
-}
-
-HAPCharacteristic HAPC_On() {
-  HAPCharacteristic c;
-  c.type = "25";
-  c.format = "bool";
-  c.value = JSONValue(false);
-  c.perms = [HAPPermission.PAIRED_READ, 
-             HAPPermission.PAIRED_WRITE,
-             HAPPermission.EVENTS];
-  c.description = "On";
-
-  return c;
-}
-
-HAPCharacteristic HAPC_Brightness() {
-  HAPCharacteristic c;
-  c.type = "08";
-  c.format = "int";
-  c.value = JSONValue(0);
-  c.perms = [HAPPermission.PAIRED_READ, 
-             HAPPermission.PAIRED_WRITE,
-             HAPPermission.EVENTS];
-  c.description = "Brightness";
-
-  return c;
-}
-
-/*=============================*/
 
 struct HAPCharacteristic {
   string type;
@@ -144,12 +38,30 @@ struct HAPCharacteristic {
       j["description"] = JSONValue(description);
     }
     foreach(p; perms) {
-      if (p == HAPPermission.PAIRED_READ) {
-        j["perms"].array ~= JSONValue("pr");
-      } else if (p == HAPPermission.PAIRED_WRITE) {
-        j["perms"].array ~= JSONValue("pw");
-      } else if (p == HAPPermission.EVENTS) {
-        j["perms"].array ~= JSONValue("ev");
+      switch(p) {
+        case HAPPermission.PAIRED_READ:
+          j["perms"].array ~= JSONValue("pr");
+          break;
+        case HAPPermission.PAIRED_WRITE:
+          j["perms"].array ~= JSONValue("pw");
+          break;
+        case HAPPermission.EVENTS:
+          j["perms"].array ~= JSONValue("ev");
+          break;
+        case HAPPermission.ADDITIONAL_AUTHORIZATION:
+          j["perms"].array ~= JSONValue("aa");
+          break;
+        case HAPPermission.TIMED_WRITE:
+          j["perms"].array ~= JSONValue("tw");
+          break;
+        case HAPPermission.HIDDEN:
+          j["perms"].array ~= JSONValue("hd");
+          break;
+        case HAPPermission.WRITE_RESPONSE:
+          j["perms"].array ~= JSONValue("wr");
+          break;
+        default:
+          break;
       }
     }
 
@@ -206,6 +118,15 @@ struct HAPAccessory {
       if (s.type == type) return s;
     }
     throw new Exception("Service with given type not found.");
+  }
+  HAPCharacteristic findCharacteristic(uint iid) {
+    foreach(s; services) {
+      foreach(c; s.chars) {
+        if (c.iid != iid) continue;
+        return c;
+      }
+    }
+    throw new Exception("Characteristic with given iid not found");
   }
   HAPService createInfoService(string manufacturer, string model,
       string name, string sn) {
