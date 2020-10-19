@@ -27,10 +27,10 @@ void main(string[] args) {
 
   ushort port = 45001;
   HAPServer server = new HAPServer(iface, "dbridge", "_hap._tcp", "local", port,
-								     "dbridge", "00:01:02:03:04:05", "111-11-111");
+      "dbridge", "00:01:02:03:04:05", "111-11-111");
 
   server.onPair = toDelegate(&onPair);
-  
+
   // read file
   if (exists("persist")) {
     auto file = File("persist", "r");
@@ -40,44 +40,46 @@ void main(string[] args) {
     ubyte[] iOS_ID = Base64.decode(strip(file.readln()));
     server.setPairInfo(ACC_PK, ACC_SK, iOS_PK, iOS_ID);
   }
-  
+
   // lightbulb
   HAPAccessory lightAcc;
-  lightAcc.aid = 2;
-  lightAcc.createInfoService("Default-Manufacturer", "Default-Model", "Test lamp", "Default-SerialNumber", "0.0.3");
+  lightAcc.addInfoService("Default-Manufacturer", 
+      "Default-Model", "lamp", "Default-SerialNumber", "0.0.1");
 
-  HAPService lservice;
-  lservice.type = "43";
+  HAPService lservice = HAPS_LightBulb;
 
-  HAPCharacteristic lname;
-  lname.type = "23";
-  lname.format = "string";
-  lname.value = JSONValue("Test lamp");
-  lname.perms = [HAPPermission.PAIRED_READ];
-  lname.description = "Name";
+  HAPCharacteristic lname = HAPC_Name("lamp");
+  lservice.addCharacteristic(lname);
 
-  HAPCharacteristic lon;
-  lon.type = "25";
-  lon.format = "bool";
-  lon.value = JSONValue(false);
-  lon.perms = [HAPPermission.PAIRED_READ, HAPPermission.PAIRED_WRITE, HAPPermission.EVENTS];
-  lon.description = "On";
-  
-  void onSet(JSONValue value) {
-	writeln("light set: ", value);
-  }
-  lon.onSet = toDelegate(&onSet);
+  HAPCharacteristic lon = HAPC_On();
+  lon.onSet = (JSONValue value) {
+    writeln("light set: ", value);
+    lon.value = value;
+  };
+  lon.onGet = () {
+    writeln("light get: ");
+    return lon.value;
+  };
+  lservice.addCharacteristic(lon);
 
-  lservice.chars ~= lname;
-  lservice.chars ~= lon;
+  /* TODO: add support for brightness
+  HAPCharacteristic lbr = HAPC_Brightness();
+  lbr.onSet = (JSONValue value) {
+    writeln("brightness set: ", value);
+    lon.value = value;
+  };
+  lbr.onGet = () {
+    writeln("brightness get: ");
+    return lbr.value;
+  };
+  lservice.addCharacteristic(lbr); */
 
   lightAcc.addService(lservice);
-  
-  server.addAccsessory(lightAcc);
-  
+  server.addAccessory(lightAcc);
+
   // --------------- //
   while(true) {
-	  server.loop();
-	  Thread.sleep(1.msecs);
+    server.loop();
+    Thread.sleep(1.msecs);
   }
 }
