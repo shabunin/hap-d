@@ -48,7 +48,7 @@ void main(string[] args) {
   lightAcc.addInfoService("Default-Manufacturer", 
       "Default-Model", "lamp+fan", "Default-SerialNumber", "0.0.1");
 
-  // Create lightbulb service
+  // Create lightbulb service ----------------
   HAPService lservice = HAPS_LightBulb;
 
   HAPCharacteristic lname = HAPC_Name("lamp");
@@ -66,7 +66,7 @@ void main(string[] args) {
   };
   lservice.addCharacteristic(lon);
 
-  // brightness characteristic
+  // Brightness 
   HAPCharacteristic lbr = HAPC_Brightness();
   lbr.onSet = (JSONValue value) {
     writeln("brightness set: ", value);
@@ -77,16 +77,16 @@ void main(string[] args) {
     return lbr.value;
   };
   lservice.addCharacteristic(lbr); 
-  
 
   lightAcc.addService(lservice);
+  // ----------------------------------------
 
   // Now add fan service to same accessory
   HAPService fservice = HAPS_Fan;
   HAPCharacteristic fname = HAPC_Name("fan");
   fservice.addCharacteristic(fname);
 
-  // Active
+  // Active (on/off)
   HAPCharacteristic factive = HAPC_Active();
   factive.onSet = (JSONValue value) {
     writeln("fan.active char set: ", value);
@@ -97,11 +97,25 @@ void main(string[] args) {
     return factive.value;
   };
   fservice.addCharacteristic(factive);
+
+  // Rotation Speed
+  HAPCharacteristic fspeed = HAPC_RotationSpeed();
+  fspeed.onSet = (JSONValue value) {
+    writeln("fan.speed char set: ", value);
+    fspeed.value = value;
+  };
+  fspeed.onGet = () {
+    writeln("fan.speed char get");
+    return fspeed.value;
+  };
+  fservice.addCharacteristic(fspeed);
+
   lightAcc.addService(fservice);
+  // ----------------------------------------
 
   server.addAccessory(lightAcc);
 
-  // --------------- //
+  // ----- main loop -----
   while(true) {
     server.loop();
     Thread.sleep(1.msecs);
