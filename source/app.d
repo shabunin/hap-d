@@ -46,8 +46,9 @@ void main(string[] args) {
   // lightbulb
   HAPAccessory lightAcc;
   lightAcc.addInfoService("Default-Manufacturer", 
-      "Default-Model", "lamp", "Default-SerialNumber", "0.0.1");
+      "Default-Model", "lamp+fan", "Default-SerialNumber", "0.0.1");
 
+  // Create lightbulb service
   HAPService lservice = HAPS_LightBulb;
 
   HAPCharacteristic lname = HAPC_Name("lamp");
@@ -79,6 +80,25 @@ void main(string[] args) {
   
 
   lightAcc.addService(lservice);
+
+  // Now add fan service to same accessory
+  HAPService fservice = HAPS_Fan;
+  HAPCharacteristic fname = HAPC_Name("fan");
+  fservice.addCharacteristic(fname);
+
+  // Active
+  HAPCharacteristic factive = HAPC_Active();
+  factive.onSet = (JSONValue value) {
+    writeln("fan.active char set: ", value);
+    factive.value = value;
+  };
+  factive.onGet = () {
+    writeln("fan.active char get: ");
+    return factive.value;
+  };
+  fservice.addCharacteristic(factive);
+  lightAcc.addService(fservice);
+
   server.addAccessory(lightAcc);
 
   // --------------- //
