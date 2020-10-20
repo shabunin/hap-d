@@ -175,10 +175,8 @@ class CustomHTTP: SocketListener {
   public void delegate (string client_addr, ubyte[] content) onByteRequest = null;
 
   override void onMessage(Socket sock, string addr, char[] data) {
-    writeln("message: ", data);
     if (!encMode[addr]) {
-      writeln("pure http request");
-      // pure http
+      // unencrypted text request
       try {
         string status;
         string[string] headers;
@@ -192,7 +190,6 @@ class CustomHTTP: SocketListener {
         // encode/decode?
       }
     } else {
-      writeln("encrypted request");
       onByteRequest(addr, cast(ubyte[])data);
     }
   }

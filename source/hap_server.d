@@ -150,6 +150,9 @@ class HAPServer {
 
 
   private void handleByteRequest(string client_addr, ubyte[] enc_message) {
+    writeln("=======================================");
+    writeln("encrypted request from remote device");
+    writeln("-- request begin --");
     ubyte[] dec = layerDecrypt(enc_message, fragment, in_count, enc_controllerToAccessoryKey);
 
     string status;
@@ -161,14 +164,12 @@ class HAPServer {
     writeln(status);
     writeln(headers);
     writeln(content);
+    writeln("-- request end --");
 
     string method = status.split(" ")[0];
     string path = status.split(" ")[1];
 
     if (method == "GET" && path == "/accessories") {
-      writeln("iOS device requesting accessory list");
-
-
       string resStatus = "HTTP/1.1 200 OK";
       string[string] resHeaders; 
       resHeaders["Content-Type"] = "application/hap+json";
@@ -184,7 +185,10 @@ class HAPServer {
       resHeaders["Content-Length"] = to!string(resBody.length);
 
       string response = encodeHTTP(resStatus, resHeaders, resBody);
-      writeln("Sending response: ", response);
+      writeln("Sending response: ");
+      writeln("-- response begin --");
+      writeln(response);
+      writeln("-- response end --");
 
       // attempt to send accessory list list
       ubyte[] enc = layerEncrypt(cast(ubyte[])response,
@@ -196,7 +200,6 @@ class HAPServer {
       auto idx = path.indexOf("?");
       if (idx < 0) return;
       auto queryStr = path[idx+1..$];
-      writeln("queryStr: ", queryStr);
       auto queryArr = queryStr.split("&");
       foreach(qi; queryArr) {
         auto kv = qi.split("=");
@@ -214,7 +217,6 @@ class HAPServer {
         foreach(ai; ai_ids) {
           auto aid = parse!uint(ai.split(".")[0]);
           auto iid = parse!uint(ai.split(".")[1]);
-          writeln("wanna know status of ", aid, "-", iid);
           try {
             auto acc = getAccessory(aid);
             auto c = acc.findCharacteristic(iid);
@@ -266,7 +268,10 @@ class HAPServer {
       resHeaders["Content-Length"] = to!string(resBody.length);
 
       string response = encodeHTTP(resStatus, resHeaders, resBody);
-      writeln("Sending response: ", response);
+      writeln("Sending response: ");
+      writeln("-- response begin --");
+      writeln(response);
+      writeln("-- response end --");
 
       ubyte[] enc = layerEncrypt(cast(ubyte[])response,
           out_count, enc_accessoryToControllerKey);
@@ -321,7 +326,11 @@ class HAPServer {
       resHeaders["Content-Length"] = to!string(resBody.length);
 
       string response = encodeHTTP(resStatus, resHeaders, resBody);
-      writeln("Sending response: ", response);
+      writeln("Sending response: ");
+      writeln("-- response begin --");
+      writeln(response);
+      writeln("-- response end --");
+
       ubyte[] enc = layerEncrypt(cast(ubyte[])response,
           out_count, enc_accessoryToControllerKey);
       httpServer.sendByteResponse(client_addr, enc);
@@ -330,16 +339,21 @@ class HAPServer {
 
   private void handleHttpRequest(string client_addr, 
       string status, string[string] headers, string content) {
-    writeln("http request from remote device");
+    writeln("=======================================");
+    writeln("unencrypted request from remote device");
+    writeln("-- request begin --");
 
     string method = status.split(" ")[0];
     string path = status.split(" ")[1];
+    writeln(status);
+    writeln(headers);
 
     if (path == "/pair-verify") {
       ubyte[] buffer = cast(ubyte[]) content;
-
       auto tlvReq = decodeTlv(buffer);
-      writeln("tlvReq: ", tlvReq);
+      writeln(tlvReq);
+      writeln("-- request end --");
+
       auto tlvReqState = tlvReq[TLVTypes.state].value[0];
       if (tlvReqState == TLVStates.M1) {
         writeln("pair-verify step 1/2");
@@ -459,6 +473,8 @@ class HAPServer {
       ubyte[] buffer = cast(ubyte[]) content;
 
       auto tlvReq = decodeTlv(buffer);
+      writeln(tlvReq);
+      writeln("-- request end --");
 
       auto tlvReqState = tlvReq[TLVTypes.state].value[0];
 
