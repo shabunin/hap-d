@@ -5,15 +5,14 @@ import std.json;
 import enum_characteristics;
 import enum_services;
 
-enum HAPPermission {
-  PAIRED_READ,
-  PAIRED_WRITE,
-  EVENTS,
-  ADDITIONAL_AUTHORIZATION,
-  TIMED_WRITE,
-  HIDDEN,
-  WRITE_RESPONSE,
-  NONE
+enum HAPPermission : string {
+  PAIRED_READ = "pr",
+  PAIRED_WRITE = "pw",
+  EVENTS = "ev",
+  ADDITIONAL_AUTHORIZATION = "aa",
+  TIMED_WRITE = "tw",
+  HIDDEN = "hd",
+  WRITE_RESPONSE = "wr",
 }
 
 struct HAPCharacteristic {
@@ -33,37 +32,10 @@ struct HAPCharacteristic {
       j["value"] = value;
     }
     j["format"] = JSONValue(format);
-    j["perms"] = parseJSON("[]");
     if (description.length > 0) {
       j["description"] = JSONValue(description);
     }
-    foreach(p; perms) {
-      switch(p) {
-        case HAPPermission.PAIRED_READ:
-          j["perms"].array ~= JSONValue("pr");
-          break;
-        case HAPPermission.PAIRED_WRITE:
-          j["perms"].array ~= JSONValue("pw");
-          break;
-        case HAPPermission.EVENTS:
-          j["perms"].array ~= JSONValue("ev");
-          break;
-        case HAPPermission.ADDITIONAL_AUTHORIZATION:
-          j["perms"].array ~= JSONValue("aa");
-          break;
-        case HAPPermission.TIMED_WRITE:
-          j["perms"].array ~= JSONValue("tw");
-          break;
-        case HAPPermission.HIDDEN:
-          j["perms"].array ~= JSONValue("hd");
-          break;
-        case HAPPermission.WRITE_RESPONSE:
-          j["perms"].array ~= JSONValue("wr");
-          break;
-        default:
-          break;
-      }
-    }
+    j["perms"] = JSONValue(perms);
 
     return j.toJSON;
   }
@@ -75,6 +47,8 @@ struct HAPService {
   string type;
   uint iid;
   HAPCharacteristic[] chars;
+  HAPCharacteristic[] required;
+  HAPCharacteristic[] optional;
   string toJSON() {
     JSONValue j = parseJSON("{}");
     j["type"] = JSONValue(type);
@@ -91,6 +65,9 @@ struct HAPService {
         throw new Exception("Characteristic of given type already exist.");
     }
     chars ~= chr;
+  }
+  void assertCharacteristics() {
+    // TODO check required and optional characteristics
   }
 }
 
