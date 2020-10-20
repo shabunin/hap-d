@@ -1,5 +1,6 @@
 module hap_structs;
 
+import std.algorithm: canFind;
 import std.json;
 
 import enum_characteristics;
@@ -47,8 +48,9 @@ struct HAPService {
   string type;
   uint iid;
   HAPCharacteristic[] chars;
-  HAPCharacteristic[] required;
-  HAPCharacteristic[] optional;
+  string[] cRequired; // required characteristics
+  string[] cOptional; // optinal
+  string[] cPresent;  // added by user
   string toJSON() {
     JSONValue j = parseJSON("{}");
     j["type"] = JSONValue(type);
@@ -61,13 +63,23 @@ struct HAPService {
   }
   void addCharacteristic(HAPCharacteristic chr) {
     foreach(c; chars) {
-      if (c.type == chr.type) 
+      if (!cRequired.canFind(chr.type) 
+          && !cOptional.canFind(chr.type)) {
+        throw new Exception("Characteristic of given type is not supported by service");
+      }
+      if (c.type == chr.type) {
         throw new Exception("Characteristic of given type already exist.");
+      }
     }
     chars ~= chr;
+    cPresent ~= chr.type;
   }
   void assertCharacteristics() {
-    // TODO check required and optional characteristics
+    foreach(r; cRequired) {
+      if (!cPresent.canFind(r)) {
+        throw new Exception("Service should contain all required characteristics");
+      }
+    }
   }
 }
 
@@ -108,7 +120,7 @@ struct HAPAccessory {
   HAPService createInfoService(string manufacturer, string model,
       string name, string sn) {
 
-    HAPService info = HAPS_Info;
+    HAPService info = HAPS_Info();
 
     HAPCharacteristic i1 = HAPC_Identify();
     info.addCharacteristic(i1);
@@ -138,9 +150,11 @@ struct HAPAccessory {
     return info;
   }
   uint addService(HAPService service) {
+    service.assertCharacteristics();
     foreach(s; services) {
-      if (s.type == service.type) 
+      if (s.type == service.type) {
         throw new Exception("Service of given type already exists.");
+      }
     }
     service.iid = iid; iid += 1;
     for (int i = 0; i < service.chars.length; i += 1) {

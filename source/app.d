@@ -43,18 +43,17 @@ void main(string[] args) {
     server.setPairInfo(ACC_PK, ACC_SK, iOS_PK, iOS_ID);
   }
 
-  // lightbulb
+  // ---- LightBulb example 
   HAPAccessory lightAcc;
   lightAcc.addInfoService("Default-Manufacturer", 
       "Default-Model", "lamp+fan", "Default-SerialNumber", "0.0.1");
 
-  // Create lightbulb service ----------------
-  HAPService lservice = HAPS_LightBulb;
+  // Create lightbulb service 
+  HAPService lservice = HAPS_LightBulb();
 
   HAPCharacteristic lname = HAPC_Name("lamp");
-  lservice.addCharacteristic(lname);
 
-  // On/Off
+  // On/Off characteristic
   HAPCharacteristic lon = HAPC_On();
   lon.onSet = (JSONValue value) {
     writeln("light set: ", value);
@@ -64,7 +63,6 @@ void main(string[] args) {
     writeln("light get: ");
     return lon.value;
   };
-  lservice.addCharacteristic(lon);
 
   // Brightness 
   HAPCharacteristic lbr = HAPC_Brightness();
@@ -76,15 +74,16 @@ void main(string[] args) {
     writeln("brightness get: ");
     return lbr.value;
   };
-  lservice.addCharacteristic(lbr); 
 
+  lservice.addCharacteristic(lname);
+  lservice.addCharacteristic(lon);
+  lservice.addCharacteristic(lbr); 
   lightAcc.addService(lservice);
   // ----------------------------------------
 
-  // Now add fan service to same accessory
-  HAPService fservice = HAPS_Fan;
+  // Now add fan service to the same accessory
+  HAPService fservice = HAPS_Fan();
   HAPCharacteristic fname = HAPC_Name("fan");
-  fservice.addCharacteristic(fname);
 
   // Active (on/off)
   HAPCharacteristic factive = HAPC_Active();
@@ -96,7 +95,6 @@ void main(string[] args) {
     writeln("fan.active char get: ");
     return factive.value;
   };
-  fservice.addCharacteristic(factive);
 
   // Rotation Speed
   HAPCharacteristic fspeed = HAPC_RotationSpeed();
@@ -108,12 +106,58 @@ void main(string[] args) {
     writeln("fan.speed char get");
     return fspeed.value;
   };
+  fservice.addCharacteristic(fname);
   fservice.addCharacteristic(fspeed);
-
+  fservice.addCharacteristic(factive);
   lightAcc.addService(fservice);
+
+  // register accessory on server
+  server.addAccessory(lightAcc);
   // ----------------------------------------
 
-  server.addAccessory(lightAcc);
+
+  // Thermostat
+  HAPAccessory thermo;
+  thermo.addInfoService("Default-Manufacturer", 
+      "Default-Model", "thermo", "Default-SerialNumber", "0.0.1");
+  HAPService tservice = HAPS_Thermostat();
+  HAPCharacteristic ct = HAPC_CurrentTemperature();
+  ct.value = JSONValue(28);
+  ct.onGet = () {
+    return ct.value;
+  };
+  HAPCharacteristic tt = HAPC_TargetTemperature();
+  HAPCharacteristic tname = HAPC_Name("thermo");
+  tt.onGet = () {
+    return tt.value;
+  };
+  tt.onSet = (JSONValue value) {
+    writeln("thermostat target temperature set: ", value);
+    tt.value = value;
+    ct.value = JSONValue(value.integer - 1);
+  };
+  HAPCharacteristic chcstate = HAPC_CurrentHeatingCoolingState();
+  chcstate.onGet = () {
+    return chcstate.value;
+  };
+  HAPCharacteristic thcstate = HAPC_TargetHeatingCoolingState();
+  thcstate.onGet = () {
+    return thcstate.value;
+  };
+  thcstate.onSet = (JSONValue value) {
+    writeln("thermostat target heating cooling state set: ", value);
+    thcstate.value = value;
+    chcstate.value = value;
+  };
+  HAPCharacteristic tunits = HAPC_TemperatureDisplayUnits();
+  tservice.addCharacteristic(tname);
+  tservice.addCharacteristic(ct);
+  tservice.addCharacteristic(tt);
+  tservice.addCharacteristic(chcstate);
+  tservice.addCharacteristic(thcstate);
+  tservice.addCharacteristic(tunits);
+  thermo.addService(tservice);
+  server.addAccessory(thermo);
 
   // ----- main loop -----
   while(true) {

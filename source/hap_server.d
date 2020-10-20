@@ -166,6 +166,8 @@ class HAPServer {
     writeln(content);
     writeln("-- request end --");
 
+    if (!decoded) return;
+
     string method = status.split(" ")[0];
     string path = status.split(" ")[1];
 
@@ -286,10 +288,12 @@ class HAPServer {
         if (("ev" in jc)) {
           // don't support notifications for a moment
           // TODO implement support
+          // <EVENT/1.0 200 OK>
           JSONValue jr = parseJSON("{}");
           jr["aid"] = JSONValue(aid);
           jr["iid"] = JSONValue(iid);
-          jr["status"] = JSONValue(-70406);
+          //jr["status"] = JSONValue(-70406);
+          jr["status"] = JSONValue(0);
           jres["characteristics"].array ~= jr;
           continue;
         }
@@ -677,7 +681,7 @@ class HAPServer {
       bridge.createInfoService("hap-d", acc_model, acc_name, acc_id, "0.0.1");
     bridge.addService(bridgeInfo);
 
-    HAPService hapInfo = HAPS_HapProtocolInfo;
+    HAPService hapInfo = HAPS_HapProtocolInfo();
     HAPCharacteristic ver = HAPC_Version("1.1.0");
     hapInfo.addCharacteristic(ver);
     bridge.addService(hapInfo);
