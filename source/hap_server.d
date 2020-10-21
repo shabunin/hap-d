@@ -27,12 +27,55 @@ import hap_structs;
 import enum_characteristics;
 import enum_services;
 
+struct PrepareTimer {
+  ulong pid;
+  Duration ttl;
+  Duration started;
+}
+
 class HAPServer {
   private DnsSD advertiser;
   private string[string] txt;
   private int serviceIndex;	
   private StopWatch sw;
   private Duration interval = 5000.msecs;
+
+
+  private PrepareTimer[] pids;
+  private StopWatch pidTimer;
+  private void addPid(ulong pid, ulong ttl) {
+    PrepareTimer pt;
+    pt.pid = pid;
+    pt.ttl = ttl.msecs;
+    if (!pidTimer.running) {
+      pidTimer.reset();
+      pidTimer.start();
+    }
+    pt.started = pidTimer.peek();
+    pids ~= pt;
+  }
+  int findPid(ulong pid) {
+    int r = -1;
+    for(int i = 0; i < pids.length; i += 1) {
+      if (pids[i].pid == pid) return i;
+    }
+    return r;
+  }
+  private void removePid(int i) {
+    pids = pids.remove(i);
+    if (pids.length == 0) {
+      pidTimer.reset();
+      pidTimer.stop();
+    }
+  }
+  private void removePid(ulong pid) {
+    int i = findPid(pid);
+    if (i > -1) {
+      removePid(i);
+      return;
+    }
+    throw new Exception("Timer with given pid not found");
+  }
 
   private CustomHTTP httpServer;
   private SrpServer srpServer;
@@ -72,6 +115,18 @@ class HAPServer {
     txt["sf"] = "0";
     advertiser.setTxtRecord(serviceIndex, txt);
   };
+
+  void sendResponse(string resStatus,
+      string[string] resHeaders, string resBody, string client_addr) {
+    string response = encodeHTTP(resStatus, resHeaders, resBody);
+    writeln("Sending response: ");
+    writeln("-- response begin --");
+    writeln(response);
+    writeln("-- response end --");
+    ubyte[] enc = layerEncrypt(cast(ubyte[])response,
+        out_count, enc_accessoryToControllerKey);
+    httpServer.sendByteResponse(client_addr, enc);
+  }
 
   private ubyte[] layerEncrypt(ubyte[] data, ref ulong count, ubyte[] key) {
     ubyte[] result;
@@ -148,7 +203,6 @@ class HAPServer {
     return result;
   }
 
-
   private void handleByteRequest(string client_addr, ubyte[] enc_message) {
     writeln("=======================================");
     writeln("encrypted request from remote device");
@@ -171,7 +225,45 @@ class HAPServer {
     string method = status.split(" ")[0];
     string path = status.split(" ")[1];
 
-    if (method == "GET" && path == "/accessories") {
+    // TODO: PUT /prepare
+    /***
+      PUT /prepare HTTP/1.1
+      [ "Content-Length":"39",
+      "Host":"dbridge._hap._tcp.local",
+      "Content-Type":"application/hap+json"]
+      {"ttl":5000,"pid":12730427263335762745}
+     */
+
+    if (method == "PUT" && path == "/prepare") {
+      JSONValue j = parseJSON(content);
+      ulong ttl, pid;
+      if (j["ttl"].type == JSONType.integer) {
+        ttl = j["ttl"].integer;
+      } else if (j["ttl"].type == JSONType.uinteger) {
+        ttl = j["ttl"].uinteger;
+      }
+      if (j["pid"].type == JSONType.integer) {
+        pid = j["pid"].integer;
+      } else if (j["pid"].type == JSONType.uinteger) {
+        pid = j["pid"].uinteger;
+      }
+      int idx = findPid(pid);
+      if (idx == -1) {
+        addPid(pid, ttl);
+      } else {
+        // if pid is already added, then reset it
+        pids[idx].started = pidTimer.peek();
+      }
+      JSONValue jres = parseJSON("{}");
+      jres["status"] = JSONValue(0);
+      string resStatus = "HTTP/1.1 200 OK";
+      string resBody = jres.toJSON;
+      string[string] resHeaders; 
+      resHeaders["Content-Type"] = "application/hap+json";
+      resHeaders["Content-Length"] = to!string(resBody.length);
+
+      sendResponse(resStatus, resHeaders, resBody, client_addr);
+    } else if (method == "GET" && path == "/accessories") {
       string resStatus = "HTTP/1.1 200 OK";
       string[string] resHeaders; 
       resHeaders["Content-Type"] = "application/hap+json";
@@ -187,15 +279,8 @@ class HAPServer {
       resHeaders["Content-Length"] = to!string(resBody.length);
 
       string response = encodeHTTP(resStatus, resHeaders, resBody);
-      writeln("Sending response: ");
-      writeln("-- response begin --");
-      writeln(response);
-      writeln("-- response end --");
 
-      // attempt to send accessory list list
-      ubyte[] enc = layerEncrypt(cast(ubyte[])response,
-          out_count, enc_accessoryToControllerKey);
-      httpServer.sendByteResponse(client_addr, enc);
+      sendResponse(resStatus, resHeaders, resBody, client_addr);
     } else if (method == "GET" && path.indexOf("/characteristics") > -1) {
       // GET /characteristics?id=2.10,2.11 HTTP/1.1
       string[string] query;
@@ -270,23 +355,38 @@ class HAPServer {
       resHeaders["Content-Length"] = to!string(resBody.length);
 
       string response = encodeHTTP(resStatus, resHeaders, resBody);
-      writeln("Sending response: ");
-      writeln("-- response begin --");
-      writeln(response);
-      writeln("-- response end --");
-
-      ubyte[] enc = layerEncrypt(cast(ubyte[])response,
-          out_count, enc_accessoryToControllerKey);
-      httpServer.sendByteResponse(client_addr, enc);
+      sendResponse(resStatus, resHeaders, resBody, client_addr);
     } else if (method == "PUT" && path == "/characteristics") {
       JSONValue j = parseJSON(content);
       JSONValue jres = parseJSON("{}");
+      bool timedRequest = false;
+      bool expired = false;
+      if (("pid" in j) !is null) {
+        timedRequest = true;
+        ulong pid;
+        if (j["pid"].type == JSONType.integer) {
+          pid = j["pid"].integer;
+        } else if (j["pid"].type == JSONType.uinteger) {
+          pid = j["pid"].uinteger;
+        }
+        int idx = findPid(pid);
+        if (idx > -1) {
+          // timer can be found in array
+          // we should set values as in request
+          expired = false;
+          removePid(idx);
+        } else {
+          // if timer is absent in array
+          // then it is expired, probably
+          expired = true;
+        }
+      }
       jres["characteristics"] = parseJSON("[]");
+      if (("characteristics" in j) is null) return;
       foreach(jc; j["characteristics"].array) {
         uint aid = to!uint(jc["aid"].integer);
         uint iid = to!uint(jc["iid"].integer);
         if (("ev" in jc)) {
-          // don't support notifications for a moment
           // TODO implement support
           // <EVENT/1.0 200 OK>
           JSONValue jr = parseJSON("{}");
@@ -297,29 +397,33 @@ class HAPServer {
           jres["characteristics"].array ~= jr;
           continue;
         }
+        if (timedRequest && expired) {
+          JSONValue jr = parseJSON("{}");
+          jr["aid"] = JSONValue(aid);
+          jr["iid"] = JSONValue(iid);
+          jr["status"] = JSONValue(-70410);
+          jres["characteristics"].array ~= jr;
+          continue;
+        }
         if (("value" in jc) is null) continue;
         JSONValue jv = jc["value"];
         for(auto a = 0; a < accs.length; a += 1) {
           if (accs[a].aid != aid) continue;
-          for (auto s = 0; s < accs[a].services.length; s += 1) {
-            for(auto c = 0; c < accs[a].services[s].chars.length; c += 1) {
-              if (accs[a].services[s].chars[c].iid != iid) continue;
-              if (accs[a].services[s].chars[c].onSet !is null) {
-                accs[a].services[s].chars[c].onSet(jv);
-                JSONValue jr = parseJSON("{}");
-                jr["aid"] = JSONValue(aid);
-                jr["iid"] = JSONValue(iid);
-                jr["status"] = JSONValue(0);
-                jr["value"] = jv;
-                jres["characteristics"].array ~= jr;
-              } else {
-                JSONValue jr = parseJSON("{}");
-                jr["aid"] = JSONValue(aid);
-                jr["iid"] = JSONValue(iid);
-                jr["status"] = JSONValue(-70402);
-                jres["characteristics"].array ~= jr;	
-              }
-            }
+          HAPCharacteristic c = accs[a].findCharacteristic(iid);
+          if (c.onSet !is null) {
+            c.onSet(jv);
+            JSONValue jr = parseJSON("{}");
+            jr["aid"] = JSONValue(aid);
+            jr["iid"] = JSONValue(iid);
+            jr["status"] = JSONValue(0);
+            jr["value"] = jv;
+            jres["characteristics"].array ~= jr;
+          } else {
+            JSONValue jr = parseJSON("{}");
+            jr["aid"] = JSONValue(aid);
+            jr["iid"] = JSONValue(iid);
+            jr["status"] = JSONValue(-70402);
+            jres["characteristics"].array ~= jr;	
           }
         }
       }
@@ -330,14 +434,7 @@ class HAPServer {
       resHeaders["Content-Length"] = to!string(resBody.length);
 
       string response = encodeHTTP(resStatus, resHeaders, resBody);
-      writeln("Sending response: ");
-      writeln("-- response begin --");
-      writeln(response);
-      writeln("-- response end --");
-
-      ubyte[] enc = layerEncrypt(cast(ubyte[])response,
-          out_count, enc_accessoryToControllerKey);
-      httpServer.sendByteResponse(client_addr, enc);
+      sendResponse(resStatus, resHeaders, resBody, client_addr);
     }
   }
 
@@ -710,6 +807,14 @@ class HAPServer {
       sw.reset();
     }
     httpServer.processSocket();
+    // process pid timers
+    Duration pidDur = pidTimer.peek();
+    for(int i = 0; i < pids.length; i += 1) {
+      Duration pdur = pidDur - pids[i].started;
+      if (pdur > pids[i].ttl) {
+        removePid(i);
+      }
+    }
   }
 }
 

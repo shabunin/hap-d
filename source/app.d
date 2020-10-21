@@ -134,7 +134,11 @@ void main(string[] args) {
   tt.onSet = (JSONValue value) {
     writeln("thermostat target temperature set: ", value);
     tt.value = value;
-    ct.value = JSONValue(value.integer - 1);
+    if (value.type == JSONType.integer) {
+      ct.value = JSONValue(value.integer - 1);
+    } else if (value.type == JSONType.float_) {
+      ct.value = JSONValue(value.floating - 1);
+    }
   };
   HAPCharacteristic chcstate = HAPC_CurrentHeatingCoolingState();
   chcstate.onGet = () {
