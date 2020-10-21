@@ -52,11 +52,11 @@ enum HAPSType: string {
 }
 
 HAPService HAPS_HapProtocolInfo() {
-  HAPService s = HAPService(HAPSType.HapProtocolInfo);
+  HAPService s = new HAPService(HAPSType.HapProtocolInfo);
   return s;
 }
 HAPService HAPS_Info() {
-  HAPService s = HAPService(HAPSType.Info);
+  HAPService s = new HAPService(HAPSType.Info);
   s.cRequired ~= HAPCType.FirmwareRevision;
   s.cRequired ~= HAPCType.Identify;
   s.cRequired ~= HAPCType.Manufacturer;
@@ -70,7 +70,7 @@ HAPService HAPS_Info() {
   return s;
 }
 HAPService HAPS_AirPurifier() {
-  HAPService s = HAPService(HAPSType.AirPurifier);
+  HAPService s = new HAPService(HAPSType.AirPurifier);
   s.cRequired ~= HAPCType.Active;
   s.cRequired ~= HAPCType.CurrentAirPurifierState;
   s.cRequired ~= HAPCType.TargetAirPurifierState;
@@ -83,7 +83,7 @@ HAPService HAPS_AirPurifier() {
   return s;
 }
 HAPService HAPS_AirQualitySensor() {
-  HAPService s = HAPService(HAPSType.AirQualitySensor);
+  HAPService s = new HAPService(HAPSType.AirQualitySensor);
   s.cRequired ~= HAPCType.AirQuality;
 
   s.cOptional ~= HAPCType.Name;
@@ -97,14 +97,14 @@ HAPService HAPS_AirQualitySensor() {
   return s;
 }
 HAPService HAPS_AudioStreamManagement() {
-  HAPService s = HAPService(HAPSType.AudioStreamManagement);
+  HAPService s = new HAPService(HAPSType.AudioStreamManagement);
   s.cRequired ~= HAPCType.SupportedAudioStreamConfiguration;
   s.cRequired ~= HAPCType.SelectedAudioStreamConfiguration;
 
   return s;
 }
 HAPService HAPS_BatteryService() {
-  HAPService s = HAPService(HAPSType.BatteryService);
+  HAPService s = new HAPService(HAPSType.BatteryService);
   s.cRequired ~= HAPCType.BatteryLevel;
   s.cRequired ~= HAPCType.ChargingState;
   s.cRequired ~= HAPCType.StatusLowBattery;
@@ -114,7 +114,7 @@ HAPService HAPS_BatteryService() {
   return s;
 }
 HAPService HAPS_CameraRTPStreamManagement() {
-  HAPService s = HAPService(HAPSType.CameraRTPStreamManagement);
+  HAPService s = new HAPService(HAPSType.CameraRTPStreamManagement);
   s.cRequired ~= HAPCType.StreamingStatus;
   s.cRequired ~= HAPCType.SelectedRTPStreamConfiguration;
   s.cRequired ~= HAPCType.SetupEndpoints;
@@ -125,7 +125,7 @@ HAPService HAPS_CameraRTPStreamManagement() {
   return s;
 }
 HAPService HAPS_CarbonDioxideSensor() {
-  HAPService s = HAPService(HAPSType.CarbonDioxideSensor);
+  HAPService s = new HAPService(HAPSType.CarbonDioxideSensor);
   s.cRequired ~= HAPCType.CarbonDioxideDetected;
 
   s.cOptional ~= HAPCType.Name;
@@ -139,7 +139,7 @@ HAPService HAPS_CarbonDioxideSensor() {
   return s;
 }
 HAPService HAPS_CarbonMonoxideSensor() {
-  HAPService s = HAPService(HAPSType.CarbonMonoxideSensor);
+  HAPService s = new HAPService(HAPSType.CarbonMonoxideSensor);
   s.cRequired ~= HAPCType.CarbonMonoxideDetected;
 
   s.cOptional ~= HAPCType.Name;
@@ -153,7 +153,7 @@ HAPService HAPS_CarbonMonoxideSensor() {
   return s;
 }
 HAPService HAPS_ContactSensor() {
-  HAPService s = HAPService(HAPSType.ContactSensor);
+  HAPService s = new HAPService(HAPSType.ContactSensor);
   s.cRequired ~= HAPCType.ContactSensorState;
 
   s.cOptional ~= HAPCType.Name;
@@ -165,7 +165,7 @@ HAPService HAPS_ContactSensor() {
   return s;
 }
 HAPService HAPS_DataStreamTransportManagement() {
-  HAPService s = HAPService(HAPSType.DataStreamTransportManagement);
+  HAPService s = new HAPService(HAPSType.DataStreamTransportManagement);
   s.cRequired ~= HAPCType.SetupDataStreamTransport;
   s.cRequired ~= HAPCType.SupportedDataStreamTransportConfiguration;
   s.cRequired ~= HAPCType.Version;
@@ -173,7 +173,7 @@ HAPService HAPS_DataStreamTransportManagement() {
   return s;
 }
 HAPService HAPS_Door() {
-  HAPService s = HAPService(HAPSType.Door);
+  HAPService s = new HAPService(HAPSType.Door);
   s.cRequired ~= HAPCType.CurrentPosition;
   s.cRequired ~= HAPCType.TargetPosition;
   s.cRequired ~= HAPCType.PositionState;
@@ -185,7 +185,7 @@ HAPService HAPS_Door() {
   return s;
 }
 HAPService HAPS_Doorbell() {
-  HAPService s = HAPService(HAPSType.Doorbell);
+  HAPService s = new HAPService(HAPSType.Doorbell);
   s.cRequired ~= HAPCType.ProgrammableSwitchEvent;
 
   s.cOptional ~= HAPCType.Name;
@@ -195,7 +195,7 @@ HAPService HAPS_Doorbell() {
   return s;
 }
 HAPService HAPS_Fan() {
-  HAPService s = HAPService(HAPSType.Fan);
+  HAPService s = new HAPService(HAPSType.Fan);
   s.cRequired ~= HAPCType.Active;
 
   s.cOptional ~= HAPCType.Name;
@@ -209,7 +209,7 @@ HAPService HAPS_Fan() {
   return s;
 }
 HAPService HAPS_Faucet() {
-  HAPService s = HAPService(HAPSType.Faucet);
+  HAPService s = new HAPService(HAPSType.Faucet);
   s.cRequired ~= HAPCType.Active;
 
   s.cOptional ~= HAPCType.Name;
@@ -218,7 +218,7 @@ HAPService HAPS_Faucet() {
   return s;
 }
 HAPService HAPS_FilterMaintenance() {
-  HAPService s = HAPService(HAPSType.FilterMaintenance);
+  HAPService s = new HAPService(HAPSType.FilterMaintenance);
   s.cRequired ~= HAPCType.FilterChangeIndication;
 
   s.cOptional ~= HAPCType.Name;
@@ -228,7 +228,7 @@ HAPService HAPS_FilterMaintenance() {
   return s;
 }
 HAPService HAPS_GarageDoorOpener() {
-  HAPService s = HAPService(HAPSType.GarageDoorOpener);
+  HAPService s = new HAPService(HAPSType.GarageDoorOpener);
   s.cRequired ~= HAPCType.CurrentDoorState;
   s.cRequired ~= HAPCType.TargetDoorState;
   s.cRequired ~= HAPCType.ObstructionDetected;
@@ -240,7 +240,7 @@ HAPService HAPS_GarageDoorOpener() {
   return s;
 }
 HAPService HAPS_HeaterCooler() {
-  HAPService s = HAPService(HAPSType.HeaterCooler);
+  HAPService s = new HAPService(HAPSType.HeaterCooler);
   s.cRequired ~= HAPCType.Active;
   s.cRequired ~= HAPCType.CurrentTemperature;
   s.cRequired ~= HAPCType.CurrentHeaterCoolerState;
@@ -257,7 +257,7 @@ HAPService HAPS_HeaterCooler() {
   return s;
 }
 HAPService HAPS_HumidifierDehumidifier() {
-  HAPService s = HAPService(HAPSType.HumidifierDehumidifier);
+  HAPService s = new HAPService(HAPSType.HumidifierDehumidifier);
   s.cRequired ~= HAPCType.Active;
   s.cRequired ~= HAPCType.CurrentRelativeHumidity;
   s.cRequired ~= HAPCType.CurrentHumidifierDehumidifierState;
@@ -274,7 +274,7 @@ HAPService HAPS_HumidifierDehumidifier() {
   return s;
 }
 HAPService HAPS_HumiditySensor() {
-  HAPService s = HAPService(HAPSType.HumiditySensor);
+  HAPService s = new HAPService(HAPSType.HumiditySensor);
   s.cRequired ~= HAPCType.CurrentRelativeHumidity;
 
   s.cOptional ~= HAPCType.Name;
@@ -286,7 +286,7 @@ HAPService HAPS_HumiditySensor() {
   return s;
 }
 HAPService HAPS_IrrigationSystem() {
-  HAPService s = HAPService(HAPSType.IrrigationSystem);
+  HAPService s = new HAPService(HAPSType.IrrigationSystem);
   s.cRequired ~= HAPCType.Active;
   s.cRequired ~= HAPCType.ProgramMode;
   s.cRequired ~= HAPCType.InUse;
@@ -298,7 +298,7 @@ HAPService HAPS_IrrigationSystem() {
   return s;
 }
 HAPService HAPS_LeakSensor() {
-  HAPService s = HAPService(HAPSType.LeakSensor);
+  HAPService s = new HAPService(HAPSType.LeakSensor);
   s.cRequired ~= HAPCType.LeakDetected;
 
   s.cOptional ~= HAPCType.Name;
@@ -310,7 +310,7 @@ HAPService HAPS_LeakSensor() {
   return s;
 }
 HAPService HAPS_LightBulb() {
-  HAPService s = HAPService(HAPSType.LightBulb);
+  HAPService s = new HAPService(HAPSType.LightBulb);
   s.cRequired ~= HAPCType.On;
 
   s.cOptional ~= HAPCType.Name;
@@ -322,7 +322,7 @@ HAPService HAPS_LightBulb() {
   return s;
 }
 HAPService HAPS_LightSensor() {
-  HAPService s = HAPService(HAPSType.LightSensor);
+  HAPService s = new HAPService(HAPSType.LightSensor);
   s.cRequired ~= HAPCType.CurrentAmbientLightLevel;
 
   s.cOptional ~= HAPCType.Name;
@@ -334,7 +334,7 @@ HAPService HAPS_LightSensor() {
   return s;
 }
 HAPService HAPS_LockManagement() {
-  HAPService s = HAPService(HAPSType.LockManagement);
+  HAPService s = new HAPService(HAPSType.LockManagement);
   s.cRequired ~= HAPCType.LockControlPoint;
   s.cRequired ~= HAPCType.Version;
 
@@ -349,7 +349,7 @@ HAPService HAPS_LockManagement() {
   return s;
 }
 HAPService HAPS_LockMechanism() {
-  HAPService s = HAPService(HAPSType.LockMechanism);
+  HAPService s = new HAPService(HAPSType.LockMechanism);
   s.cRequired ~= HAPCType.LockCurrentState;
   s.cRequired ~= HAPCType.LockTargetState;
 
@@ -358,7 +358,7 @@ HAPService HAPS_LockMechanism() {
   return s;
 }
 HAPService HAPS_Microphone() {
-  HAPService s = HAPService(HAPSType.Microphone);
+  HAPService s = new HAPService(HAPSType.Microphone);
   s.cRequired ~= HAPCType.Mute;
 
   s.cOptional ~= HAPCType.Name;
@@ -367,7 +367,7 @@ HAPService HAPS_Microphone() {
   return s;
 }
 HAPService HAPS_MotionSensor() {
-  HAPService s = HAPService(HAPSType.MotionSensor);
+  HAPService s = new HAPService(HAPSType.MotionSensor);
   s.cRequired ~= HAPCType.MotionDetected;
 
   s.cOptional ~= HAPCType.Name;
@@ -379,7 +379,7 @@ HAPService HAPS_MotionSensor() {
   return s;
 }
 HAPService HAPS_OccupancySensor() {
-  HAPService s = HAPService(HAPSType.OccupancySensor);
+  HAPService s = new HAPService(HAPSType.OccupancySensor);
   s.cRequired ~= HAPCType.OccupancyDetected;
 
   s.cOptional ~= HAPCType.Name;
@@ -391,7 +391,7 @@ HAPService HAPS_OccupancySensor() {
   return s;
 }
 HAPService HAPS_Outlet() {
-  HAPService s = HAPService(HAPSType.Outlet);
+  HAPService s = new HAPService(HAPSType.Outlet);
   s.cRequired ~= HAPCType.On;
   s.cRequired ~= HAPCType.OutletInUse;
 
@@ -400,7 +400,7 @@ HAPService HAPS_Outlet() {
   return s;
 }
 HAPService HAPS_SecuritySystem() {
-  HAPService s = HAPService(HAPSType.SecuritySystem);
+  HAPService s = new HAPService(HAPSType.SecuritySystem);
   s.cRequired ~= HAPCType.SecuritySystemCurrentState;
   s.cRequired ~= HAPCType.SecuritySystemTargetState;
 
@@ -412,19 +412,19 @@ HAPService HAPS_SecuritySystem() {
   return s;
 }
 HAPService HAPS_ServiceLabel() {
-  HAPService s = HAPService(HAPSType.ServiceLabel);
+  HAPService s = new HAPService(HAPSType.ServiceLabel);
   s.cRequired ~= HAPCType.ServiceLabelNamespace;
 
   return s;
 }
 HAPService HAPS_Siri() {
-  HAPService s = HAPService(HAPSType.Siri);
+  HAPService s = new HAPService(HAPSType.Siri);
   s.cRequired ~= HAPCType.SiriInputType;
 
   return s;
 }
 HAPService HAPS_Slat() {
-  HAPService s = HAPService(HAPSType.Slat);
+  HAPService s = new HAPService(HAPSType.Slat);
   s.cRequired ~= HAPCType.CurrentSlatState;
   s.cRequired ~= HAPCType.SlatType;
 
@@ -436,7 +436,7 @@ HAPService HAPS_Slat() {
   return s;
 }
 HAPService HAPS_SmokeSensor() {
-  HAPService s = HAPService(HAPSType.SmokeSensor);
+  HAPService s = new HAPService(HAPSType.SmokeSensor);
   s.cRequired ~= HAPCType.SmokeDetected;
 
   s.cOptional ~= HAPCType.Name;
@@ -448,7 +448,7 @@ HAPService HAPS_SmokeSensor() {
   return s;
 }
 HAPService HAPS_Speaker() {
-  HAPService s = HAPService(HAPSType.Speaker);
+  HAPService s = new HAPService(HAPSType.Speaker);
   s.cRequired ~= HAPCType.Mute;
 
   s.cOptional ~= HAPCType.Name;
@@ -457,7 +457,7 @@ HAPService HAPS_Speaker() {
   return s;
 }
 HAPService HAPS_StatelessProgrammableSwitch() {
-  HAPService s = HAPService(HAPSType.StatelessProgrammableSwitch);
+  HAPService s = new HAPService(HAPSType.StatelessProgrammableSwitch);
   s.cRequired ~= HAPCType.ProgrammableSwitchEvent;
 
   s.cOptional ~= HAPCType.Name;
@@ -466,7 +466,7 @@ HAPService HAPS_StatelessProgrammableSwitch() {
   return s;
 }
 HAPService HAPS_Switch() {
-  HAPService s = HAPService(HAPSType.Switch);
+  HAPService s = new HAPService(HAPSType.Switch);
   s.cRequired ~= HAPCType.On;
 
   s.cOptional ~= HAPCType.Name;
@@ -474,7 +474,7 @@ HAPService HAPS_Switch() {
   return s;
 }
 HAPService HAPS_TargetControl() {
-  HAPService s = HAPService(HAPSType.TargetControl);
+  HAPService s = new HAPService(HAPSType.TargetControl);
   s.cRequired ~= HAPCType.Active;
   s.cRequired ~= HAPCType.ActiveIdentifier;
   s.cRequired ~= HAPCType.ButtonEvent;
@@ -484,14 +484,14 @@ HAPService HAPS_TargetControl() {
   return s;
 }
 HAPService HAPS_TargetControlManagement() {
-  HAPService s = HAPService(HAPSType.TargetControlManagement);
+  HAPService s = new HAPService(HAPSType.TargetControlManagement);
   s.cRequired ~= HAPCType.TargetControlSupportedConfiguration;
   s.cRequired ~= HAPCType.TargetControlList;
 
   return s;
 }
 HAPService HAPS_TemperatureSensor() {
-  HAPService s = HAPService(HAPSType.TemperatureSensor);
+  HAPService s = new HAPService(HAPSType.TemperatureSensor);
   s.cRequired ~= HAPCType.CurrentTemperature;
 
   s.cOptional ~= HAPCType.Name;
@@ -503,7 +503,7 @@ HAPService HAPS_TemperatureSensor() {
   return s;
 }
 HAPService HAPS_Thermostat() {
-  HAPService s = HAPService(HAPSType.Thermostat);
+  HAPService s = new HAPService(HAPSType.Thermostat);
   s.cRequired ~= HAPCType.CurrentHeatingCoolingState;
   s.cRequired ~= HAPCType.TargetHeatingCoolingState;
   s.cRequired ~= HAPCType.CurrentTemperature;
@@ -519,7 +519,7 @@ HAPService HAPS_Thermostat() {
   return s;
 }
 HAPService HAPS_Valve() {
-  HAPService s = HAPService(HAPSType.Valve);
+  HAPService s = new HAPService(HAPSType.Valve);
   s.cRequired ~= HAPCType.Active;
   s.cRequired ~= HAPCType.InUse;
   s.cRequired ~= HAPCType.ValveType;
@@ -534,7 +534,7 @@ HAPService HAPS_Valve() {
   return s;
 }
 HAPService HAPS_Window() {
-  HAPService s = HAPService(HAPSType.Window);
+  HAPService s = new HAPService(HAPSType.Window);
   s.cRequired ~= HAPCType.CurrentPosition;
   s.cRequired ~= HAPCType.TargetPosition;
   s.cRequired ~= HAPCType.PositionState;
@@ -546,7 +546,7 @@ HAPService HAPS_Window() {
   return s;
 }
 HAPService HAPS_WindowCovering() {
-  HAPService s = HAPService(HAPSType.WindowCovering);
+  HAPService s = new HAPService(HAPSType.WindowCovering);
   s.cRequired ~= HAPCType.CurrentPosition;
   s.cRequired ~= HAPCType.TargetPosition;
   s.cRequired ~= HAPCType.PositionState;

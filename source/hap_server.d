@@ -33,6 +33,12 @@ struct PrepareTimer {
   Duration started;
 }
 
+struct EventSubscription {
+  int aid;
+  int iid;
+  string client_addr;
+}
+
 class HAPServer {
   private DnsSD advertiser;
   private string[string] txt;
@@ -40,19 +46,50 @@ class HAPServer {
   private StopWatch sw;
   private Duration interval = 5000.msecs;
 
+  private EventSubscription[] events;
+  private int findSubscriptionIndex(int aid, int iid, string client_addr) {
+    for (int i = 0; i < events.length; i += 1) {
+      auto e = events[i];
+      if (e.aid == aid && e.iid == iid && e.client_addr == client_addr)
+        return i;
+    }
+    return -1;
+  }
+  private void addSubscription(int aid, int iid, string client_addr) {
+    int idx = findSubscriptionIndex(aid, iid, client_addr);
+    if (idx == -1) {
+      EventSubscription e;
+      e.aid = aid;
+      e.iid = iid;
+      e.client_addr = client_addr;
+      events ~= e;
+    }
+  }
+  private void removeSubscription(int aid, int iid, string client_addr) {
+    int idx = findSubscriptionIndex(aid, iid, client_addr);
+    if (idx > -1) {
+      events = events.remove(idx);
+    }
+  }
 
   private PrepareTimer[] pids;
   private StopWatch pidTimer;
   private void addPid(ulong pid, ulong ttl) {
-    PrepareTimer pt;
-    pt.pid = pid;
-    pt.ttl = ttl.msecs;
-    if (!pidTimer.running) {
-      pidTimer.reset();
-      pidTimer.start();
+    int idx = findPid(pid);
+    if (idx == -1) {
+      PrepareTimer pt;
+      pt.pid = pid;
+      pt.ttl = ttl.msecs;
+      if (!pidTimer.running) {
+        pidTimer.reset();
+        pidTimer.start();
+      }
+      pt.started = pidTimer.peek();
+      pids ~= pt;
+    } else {
+      // if pid is already added, then reset it
+      pids[idx].started = pidTimer.peek();
     }
-    pt.started = pidTimer.peek();
-    pids ~= pt;
   }
   int findPid(ulong pid) {
     int r = -1;
@@ -247,13 +284,7 @@ class HAPServer {
       } else if (j["pid"].type == JSONType.uinteger) {
         pid = j["pid"].uinteger;
       }
-      int idx = findPid(pid);
-      if (idx == -1) {
-        addPid(pid, ttl);
-      } else {
-        // if pid is already added, then reset it
-        pids[idx].started = pidTimer.peek();
-      }
+      addPid(pid, ttl);
       JSONValue jres = parseJSON("{}");
       jres["status"] = JSONValue(0);
       string resStatus = "HTTP/1.1 200 OK";
@@ -384,11 +415,18 @@ class HAPServer {
       jres["characteristics"] = parseJSON("[]");
       if (("characteristics" in j) is null) return;
       foreach(jc; j["characteristics"].array) {
-        uint aid = to!uint(jc["aid"].integer);
-        uint iid = to!uint(jc["iid"].integer);
+        int aid = to!int(jc["aid"].integer);
+        int iid = to!int(jc["iid"].integer);
         if (("ev" in jc)) {
+          // add client to subscribers
           // TODO implement support
           // <EVENT/1.0 200 OK>
+          bool subscribe = jc["ev"].boolean;
+          if (subscribe) {
+            addSubscription(aid, iid, client_addr);
+          } else {
+            removeSubscription(aid, iid, client_addr);
+          }
           JSONValue jr = parseJSON("{}");
           jr["aid"] = JSONValue(aid);
           jr["iid"] = JSONValue(iid);
@@ -773,7 +811,7 @@ class HAPServer {
     httpServer.onByteRequest = toDelegate(&handleByteRequest);
 
     // bridge accessory
-    HAPAccessory bridge;
+    HAPAccessory bridge = new HAPAccessory;
     HAPService bridgeInfo = 
       bridge.createInfoService("hap-d", acc_model, acc_name, acc_id, "0.0.1");
     bridge.addService(bridgeInfo);
@@ -813,6 +851,32 @@ class HAPServer {
       Duration pdur = pidDur - pids[i].started;
       if (pdur > pids[i].ttl) {
         removePid(i);
+      }
+    }
+    // process characteristic updates
+    for(int i = 0; i < events.length; i += 1) {
+      auto e = events[i];
+      foreach(a; accs) {
+        if (a.aid != e.aid) continue;
+        HAPCharacteristic c = a.findCharacteristic(e.iid);
+        if (!c.update_requested) continue;
+        c.update_requested = false; // will it do the trick?
+
+        JSONValue[1] ju;
+        ju[0] = parseJSON("{}");
+        ju[0]["aid"] = JSONValue(e.aid);
+        ju[0]["iid"] = JSONValue(e.iid);
+        ju[0]["value"] = c.value;
+
+        JSONValue jres = parseJSON("{}");
+        jres["characteristics"] = JSONValue(ju);
+        string resStatus = "EVENT/1.0 200 OK";
+        string resBody = jres.toJSON;
+        string[string] resHeaders; 
+        resHeaders["Content-Type"] = "application/hap+json";
+        resHeaders["Content-Length"] = to!string(resBody.length);
+
+        sendResponse(resStatus, resHeaders, resBody, e.client_addr);
       }
     }
   }

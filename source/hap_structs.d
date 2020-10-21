@@ -1,6 +1,6 @@
 module hap_structs;
 
-import std.algorithm: canFind;
+import std.algorithm;
 import std.json;
 
 import enum_characteristics;
@@ -16,10 +16,12 @@ enum HAPPermission : string {
   WRITE_RESPONSE = "wr",
 }
 
-struct HAPCharacteristic {
+class HAPCharacteristic {
   string type;
   uint iid;
   JSONValue value;
+  bool update_requested;
+
   string format;
   string description;
   HAPPermission[] perms;
@@ -42,9 +44,13 @@ struct HAPCharacteristic {
   }
   void delegate(JSONValue) onSet;
   JSONValue delegate() onGet;
+  void updateValue(JSONValue newValue) {
+    value = newValue;
+    update_requested = true;
+  }
 }
 
-struct HAPService {
+class HAPService {
   string type;
   uint iid;
   HAPCharacteristic[] chars;
@@ -81,9 +87,12 @@ struct HAPService {
       }
     }
   }
+  this(string type) {
+    this.type = type;
+  }
 }
 
-struct HAPAccessory {
+class HAPAccessory {
   uint aid;
   HAPService[] services;
   uint iid = 1; // last iid

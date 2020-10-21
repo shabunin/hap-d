@@ -134,7 +134,7 @@ enum HAPCType: string {
 }
 
 HAPCharacteristic HAPC_Identify() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Identify;
   c.value = JSONValue(null);
   c.format = "bool";
@@ -144,7 +144,7 @@ HAPCharacteristic HAPC_Identify() {
   return c;
 }
 HAPCharacteristic HAPC_Manufacturer(string value) {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Manufacturer;
   c.value = JSONValue(value);
   c.format = "string";
@@ -154,7 +154,7 @@ HAPCharacteristic HAPC_Manufacturer(string value) {
   return c;
 }
 HAPCharacteristic HAPC_Model(string value) {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Model;
   c.value = JSONValue(value);
   c.format = "string";
@@ -164,7 +164,7 @@ HAPCharacteristic HAPC_Model(string value) {
   return c;
 }
 HAPCharacteristic HAPC_Name(string value) {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Name;
   c.value = JSONValue(value);
   c.format = "string";
@@ -174,7 +174,7 @@ HAPCharacteristic HAPC_Name(string value) {
   return c;
 }
 HAPCharacteristic HAPC_SerialNumber(string value) {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SerialNumber;
   c.value = JSONValue(value);
   c.format = "string";
@@ -184,7 +184,7 @@ HAPCharacteristic HAPC_SerialNumber(string value) {
   return c;
 }
 HAPCharacteristic HAPC_Version(string value) {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Version;
   c.value = JSONValue(value);
   c.format = "string";
@@ -194,7 +194,7 @@ HAPCharacteristic HAPC_Version(string value) {
   return c;
 }
 HAPCharacteristic HAPC_FirmwareRevision(string value) {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.FirmwareRevision;
   c.value = JSONValue(value);
   c.format = "string";
@@ -204,7 +204,7 @@ HAPCharacteristic HAPC_FirmwareRevision(string value) {
   return c;
 }
 HAPCharacteristic HAPC_HardwareRevision(string value) {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.HardwareRevision;
   c.format = "string";
   c.value = JSONValue(value);
@@ -216,7 +216,7 @@ HAPCharacteristic HAPC_HardwareRevision(string value) {
 }
 
 HAPCharacteristic HAPC_On() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.On;
   c.format = "bool";
   c.value = JSONValue(false);
@@ -229,7 +229,7 @@ HAPCharacteristic HAPC_On() {
 }
 
 HAPCharacteristic HAPC_Brightness() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Brightness;
   c.format = "int";
   c.value = JSONValue(0);
@@ -241,7 +241,7 @@ HAPCharacteristic HAPC_Brightness() {
   return c;
 }
 HAPCharacteristic HAPC_AccessoryFlags() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.AccessoryFlags;
   c.format = "uint32";
   c.value = JSONValue(0);
@@ -252,7 +252,7 @@ HAPCharacteristic HAPC_AccessoryFlags() {
   return c;
 }
 HAPCharacteristic HAPC_Active() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Active;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -264,7 +264,7 @@ HAPCharacteristic HAPC_Active() {
   return c;
 }
 HAPCharacteristic HAPC_ActiveIdentifier() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ActiveIdentifier;
   c.format = "uint32";
   c.value = JSONValue(0);
@@ -275,7 +275,7 @@ HAPCharacteristic HAPC_ActiveIdentifier() {
   return c;
 }
 HAPCharacteristic HAPC_AdministratorOnlyAccess() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.AdministratorOnlyAccess;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -287,7 +287,7 @@ HAPCharacteristic HAPC_AdministratorOnlyAccess() {
   return c;
 }
 HAPCharacteristic HAPC_AudioFeedback() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.AudioFeedback;
   c.format = "bool";
   c.value = JSONValue(false);
@@ -299,7 +299,7 @@ HAPCharacteristic HAPC_AudioFeedback() {
   return c;
 }
 HAPCharacteristic HAPC_AirParticulateSize(ubyte value = 0x00) {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.AirParticulateSize;
   c.format = "uint8";
   c.value = JSONValue(value);
@@ -310,7 +310,7 @@ HAPCharacteristic HAPC_AirParticulateSize(ubyte value = 0x00) {
   return c;
 }
 HAPCharacteristic HAPC_AirQuality() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.AirQuality;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -321,7 +321,7 @@ HAPCharacteristic HAPC_AirQuality() {
   return c;
 }
 HAPCharacteristic HAPC_BatteryLevel() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.BatteryLevel;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -332,7 +332,7 @@ HAPCharacteristic HAPC_BatteryLevel() {
   return c;
 }
 HAPCharacteristic HAPC_ButtonEvent() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ButtonEvent;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ, 
@@ -342,7 +342,7 @@ HAPCharacteristic HAPC_ButtonEvent() {
   return c;
 }
 HAPCharacteristic HAPC_CarbonMonoxideLevel() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CarbonMonoxideLevel;
   c.format = "float";
   c.value = JSONValue(0);
@@ -353,7 +353,7 @@ HAPCharacteristic HAPC_CarbonMonoxideLevel() {
   return c;
 }
 HAPCharacteristic HAPC_CarbonMonoxidePeakLevel() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CarbonMonoxidePeakLevel;
   c.format = "float";
   c.value = JSONValue(0);
@@ -364,7 +364,7 @@ HAPCharacteristic HAPC_CarbonMonoxidePeakLevel() {
   return c;
 }
 HAPCharacteristic HAPC_CarbonMonoxideDetected() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CarbonMonoxideDetected;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -375,7 +375,7 @@ HAPCharacteristic HAPC_CarbonMonoxideDetected() {
   return c;
 }
 HAPCharacteristic HAPC_CarbonDioxideLevel() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CarbonDioxideLevel;
   c.format = "float";
   c.value = JSONValue(0);
@@ -386,7 +386,7 @@ HAPCharacteristic HAPC_CarbonDioxideLevel() {
   return c;
 }
 HAPCharacteristic HAPC_CarbonDioxidePeakLevel() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CarbonDioxidePeakLevel;
   c.format = "float";
   c.value = JSONValue(0);
@@ -397,7 +397,7 @@ HAPCharacteristic HAPC_CarbonDioxidePeakLevel() {
   return c;
 }
 HAPCharacteristic HAPC_CarbonDioxideDetected() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CarbonDioxideDetected;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -408,7 +408,7 @@ HAPCharacteristic HAPC_CarbonDioxideDetected() {
   return c;
 }
 HAPCharacteristic HAPC_ChargingState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ChargingState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -419,7 +419,7 @@ HAPCharacteristic HAPC_ChargingState() {
   return c;
 }
 HAPCharacteristic HAPC_CoolingThresholdTemperature() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CoolingThresholdTemperature;
   c.format = "float";
   c.value = JSONValue(0);
@@ -431,7 +431,7 @@ HAPCharacteristic HAPC_CoolingThresholdTemperature() {
   return c;
 }
 HAPCharacteristic HAPC_ColorTemperature() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ColorTemperature;
   c.format = "uint32";
   c.value = JSONValue(0);
@@ -442,7 +442,7 @@ HAPCharacteristic HAPC_ColorTemperature() {
   return c;
 }
 HAPCharacteristic HAPC_ContactSensorState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ContactSensorState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -453,7 +453,7 @@ HAPCharacteristic HAPC_ContactSensorState() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentAmbientLightLevel() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentAmbientLightLevel;
   c.format = "float";
   c.value = JSONValue(0);
@@ -464,7 +464,7 @@ HAPCharacteristic HAPC_CurrentAmbientLightLevel() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentHorizontalTiltAngle() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentHorizontalTiltAngle;
   c.format = "int";
   c.value = JSONValue(0);
@@ -475,7 +475,7 @@ HAPCharacteristic HAPC_CurrentHorizontalTiltAngle() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentAirPurifierState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentAirPurifierState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -486,7 +486,7 @@ HAPCharacteristic HAPC_CurrentAirPurifierState() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentSlatState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentSlatState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -497,7 +497,7 @@ HAPCharacteristic HAPC_CurrentSlatState() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentPosition() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentPosition;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -508,7 +508,7 @@ HAPCharacteristic HAPC_CurrentPosition() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentVerticalTiltAngle() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentVerticalTiltAngle;
   c.format = "int";
   c.value = JSONValue(0);
@@ -519,7 +519,7 @@ HAPCharacteristic HAPC_CurrentVerticalTiltAngle() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentHumidifierDehumidifierState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentHumidifierDehumidifierState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -530,7 +530,7 @@ HAPCharacteristic HAPC_CurrentHumidifierDehumidifierState() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentDoorState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentDoorState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -541,7 +541,7 @@ HAPCharacteristic HAPC_CurrentDoorState() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentFanState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentFanState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -552,7 +552,7 @@ HAPCharacteristic HAPC_CurrentFanState() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentHeatingCoolingState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentHeatingCoolingState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -563,7 +563,7 @@ HAPCharacteristic HAPC_CurrentHeatingCoolingState() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentHeaterCoolerState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentHeaterCoolerState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -574,7 +574,7 @@ HAPCharacteristic HAPC_CurrentHeaterCoolerState() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentRelativeHumidity() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentRelativeHumidity;
   c.format = "float";
   c.value = JSONValue(0);
@@ -585,7 +585,7 @@ HAPCharacteristic HAPC_CurrentRelativeHumidity() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentTemperature() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentTemperature;
   c.format = "float";
   c.value = JSONValue(0);
@@ -596,7 +596,7 @@ HAPCharacteristic HAPC_CurrentTemperature() {
   return c;
 }
 HAPCharacteristic HAPC_CurrentTiltAngle() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.CurrentTiltAngle;
   c.format = "int";
   c.value = JSONValue(0);
@@ -607,7 +607,7 @@ HAPCharacteristic HAPC_CurrentTiltAngle() {
   return c;
 }
 HAPCharacteristic HAPC_DigitalZoom() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.DigitalZoom;
   c.format = "float";
   c.value = JSONValue(0);
@@ -619,7 +619,7 @@ HAPCharacteristic HAPC_DigitalZoom() {
   return c;
 }
 HAPCharacteristic HAPC_FilterLifeLevel() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.FilterLifeLevel;
   c.format = "float";
   c.value = JSONValue(0);
@@ -630,7 +630,7 @@ HAPCharacteristic HAPC_FilterLifeLevel() {
   return c;
 }
 HAPCharacteristic HAPC_FilterChangeIndication() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.FilterChangeIndication;
   c.format = "float";
   c.value = JSONValue(0);
@@ -641,7 +641,7 @@ HAPCharacteristic HAPC_FilterChangeIndication() {
   return c;
 }
 HAPCharacteristic HAPC_HeatingThresholdTemperature() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.HeatingThresholdTemperature;
   c.format = "float";
   c.value = JSONValue(0);
@@ -653,7 +653,7 @@ HAPCharacteristic HAPC_HeatingThresholdTemperature() {
   return c;
 }
 HAPCharacteristic HAPC_HoldPosition() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.HoldPosition;
   c.format = "bool";
   c.value = JSONValue(false);
@@ -663,7 +663,7 @@ HAPCharacteristic HAPC_HoldPosition() {
   return c;
 }
 HAPCharacteristic HAPC_Hue() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Hue;
   c.format = "float";
   c.value = JSONValue(0);
@@ -675,7 +675,7 @@ HAPCharacteristic HAPC_Hue() {
   return c;
 }
 HAPCharacteristic HAPC_ImageRotation() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ImageRotation;
   c.format = "float";
   c.value = JSONValue(0);
@@ -687,7 +687,7 @@ HAPCharacteristic HAPC_ImageRotation() {
   return c;
 }
 HAPCharacteristic HAPC_ImageMirroring() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ImageMirroring;
   c.format = "bool";
   c.value = JSONValue(false);
@@ -699,7 +699,7 @@ HAPCharacteristic HAPC_ImageMirroring() {
   return c;
 }
 HAPCharacteristic HAPC_InUse() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.InUse;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -710,7 +710,7 @@ HAPCharacteristic HAPC_InUse() {
   return c;
 }
 HAPCharacteristic HAPC_IsConfigured() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.IsConfigured;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -721,7 +721,7 @@ HAPCharacteristic HAPC_IsConfigured() {
   return c;
 }
 HAPCharacteristic HAPC_LeakDetected() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.LeakDetected;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -732,7 +732,7 @@ HAPCharacteristic HAPC_LeakDetected() {
   return c;
 }
 HAPCharacteristic HAPC_LockControlPoint() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.LockControlPoint;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_WRITE];
@@ -741,7 +741,7 @@ HAPCharacteristic HAPC_LockControlPoint() {
   return c;
 }
 HAPCharacteristic HAPC_LockCurrentState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.LockCurrentState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -752,7 +752,7 @@ HAPCharacteristic HAPC_LockCurrentState() {
   return c;
 }
 HAPCharacteristic HAPC_LockLastKnownAction() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.LockLastKnownAction;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -763,7 +763,7 @@ HAPCharacteristic HAPC_LockLastKnownAction() {
   return c;
 }
 HAPCharacteristic HAPC_LockManagementAutoSecurityTimeout() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.LockManagementAutoSecurityTimeout;
   c.format = "uint32";
   c.value = JSONValue(0);
@@ -775,7 +775,7 @@ HAPCharacteristic HAPC_LockManagementAutoSecurityTimeout() {
   return c;
 }
 HAPCharacteristic HAPC_LockPhysicalControls() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.LockPhysicalControls;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -787,7 +787,7 @@ HAPCharacteristic HAPC_LockPhysicalControls() {
   return c;
 }
 HAPCharacteristic HAPC_LockTargetState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.LockTargetState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -799,7 +799,7 @@ HAPCharacteristic HAPC_LockTargetState() {
   return c;
 }
 HAPCharacteristic HAPC_Logs() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Logs;
   c.format = "tlv8";
   c.value = JSONValue(0);
@@ -810,7 +810,7 @@ HAPCharacteristic HAPC_Logs() {
   return c;
 }
 HAPCharacteristic HAPC_MotionDetected() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.MotionDetected;
   c.format = "bool";
   c.value = JSONValue(false);
@@ -821,7 +821,7 @@ HAPCharacteristic HAPC_MotionDetected() {
   return c;
 }
 HAPCharacteristic HAPC_Mute() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Mute;
   c.format = "bool";
   c.value = JSONValue(false);
@@ -833,7 +833,7 @@ HAPCharacteristic HAPC_Mute() {
   return c;
 }
 HAPCharacteristic HAPC_NightVision() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.NightVision;
   c.format = "bool";
   c.value = JSONValue(false);
@@ -845,7 +845,7 @@ HAPCharacteristic HAPC_NightVision() {
   return c;
 }
 HAPCharacteristic HAPC_NitrogenDioxideDensity() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.NitrogenDioxideDensity;
   c.format = "float";
   c.value = JSONValue(0);
@@ -856,7 +856,7 @@ HAPCharacteristic HAPC_NitrogenDioxideDensity() {
   return c;
 }
 HAPCharacteristic HAPC_ObstructionDetected() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ObstructionDetected;
   c.format = "bool";
   c.value = JSONValue(false);
@@ -867,7 +867,7 @@ HAPCharacteristic HAPC_ObstructionDetected() {
   return c;
 }
 HAPCharacteristic HAPC_PM25Density() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.PM25Density;
   c.format = "float";
   c.value = JSONValue(0);
@@ -878,7 +878,7 @@ HAPCharacteristic HAPC_PM25Density() {
   return c;
 }
 HAPCharacteristic HAPC_OccupancyDetected() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.OccupancyDetected;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -890,7 +890,7 @@ HAPCharacteristic HAPC_OccupancyDetected() {
   return c;
 }
 HAPCharacteristic HAPC_OpticalZoom() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.OpticalZoom;
   c.format = "float";
   c.value = JSONValue(0);
@@ -901,7 +901,7 @@ HAPCharacteristic HAPC_OpticalZoom() {
   return c;
 }
 HAPCharacteristic HAPC_OutletInUse() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.OutletInUse;
   c.format = "bool";
   c.value = JSONValue(false);
@@ -912,7 +912,7 @@ HAPCharacteristic HAPC_OutletInUse() {
   return c;
 }
 HAPCharacteristic HAPC_OzoneDensity() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.OzoneDensity;
   c.format = "float";
   c.value = JSONValue(0);
@@ -923,7 +923,7 @@ HAPCharacteristic HAPC_OzoneDensity() {
   return c;
 }
 HAPCharacteristic HAPC_PM10Density() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.PM10Density;
   c.format = "float";
   c.value = JSONValue(0);
@@ -934,7 +934,7 @@ HAPCharacteristic HAPC_PM10Density() {
   return c;
 }
 HAPCharacteristic HAPC_PositionState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.PositionState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -945,7 +945,7 @@ HAPCharacteristic HAPC_PositionState() {
   return c;
 }
 HAPCharacteristic HAPC_ProgramMode() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ProgramMode;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -956,7 +956,7 @@ HAPCharacteristic HAPC_ProgramMode() {
   return c;
 }
 HAPCharacteristic HAPC_ProgrammableSwitchEvent() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ProgrammableSwitchEvent;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -967,7 +967,7 @@ HAPCharacteristic HAPC_ProgrammableSwitchEvent() {
   return c;
 }
 HAPCharacteristic HAPC_RelativeHumidityDehumidifierThreshold() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.RelativeHumidityDehumidifierThreshold;
   c.format = "float";
   c.value = JSONValue(0);
@@ -979,7 +979,7 @@ HAPCharacteristic HAPC_RelativeHumidityDehumidifierThreshold() {
   return c;
 }
 HAPCharacteristic HAPC_RelativeHumidityHumidifierThreshold() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.RelativeHumidityHumidifierThreshold;
   c.format = "float";
   c.value = JSONValue(0);
@@ -991,7 +991,7 @@ HAPCharacteristic HAPC_RelativeHumidityHumidifierThreshold() {
   return c;
 }
 HAPCharacteristic HAPC_RemainingDuration() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.RemainingDuration;
   c.format = "uint32";
   c.value = JSONValue(0);
@@ -1002,7 +1002,7 @@ HAPCharacteristic HAPC_RemainingDuration() {
   return c;
 }
 HAPCharacteristic HAPC_ResetFilterIndication() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ResetFilterIndication;
   c.format = "uint8";
   c.value = JSONValue(1);
@@ -1012,7 +1012,7 @@ HAPCharacteristic HAPC_ResetFilterIndication() {
   return c;
 }
 HAPCharacteristic HAPC_RotationDirection() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.RotationDirection;
   c.format = "int";
   c.value = JSONValue(0);
@@ -1024,7 +1024,7 @@ HAPCharacteristic HAPC_RotationDirection() {
   return c;
 }
 HAPCharacteristic HAPC_RotationSpeed() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.RotationSpeed;
   c.format = "float";
   c.value = JSONValue(0);
@@ -1036,7 +1036,7 @@ HAPCharacteristic HAPC_RotationSpeed() {
   return c;
 }
 HAPCharacteristic HAPC_Saturation() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Saturation;
   c.format = "float";
   c.value = JSONValue(0);
@@ -1048,7 +1048,7 @@ HAPCharacteristic HAPC_Saturation() {
   return c;
 }
 HAPCharacteristic HAPC_SecuritySystemAlarmType() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SecuritySystemAlarmType;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1059,7 +1059,7 @@ HAPCharacteristic HAPC_SecuritySystemAlarmType() {
   return c;
 }
 HAPCharacteristic HAPC_SecuritySystemCurrentState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SecuritySystemCurrentState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1070,7 +1070,7 @@ HAPCharacteristic HAPC_SecuritySystemCurrentState() {
   return c;
 }
 HAPCharacteristic HAPC_SecuritySystemTargetState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SecuritySystemTargetState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1082,7 +1082,7 @@ HAPCharacteristic HAPC_SecuritySystemTargetState() {
   return c;
 }
 HAPCharacteristic HAPC_SelectedAudioStreamConfiguration() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SelectedAudioStreamConfiguration;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ,
@@ -1092,7 +1092,7 @@ HAPCharacteristic HAPC_SelectedAudioStreamConfiguration() {
   return c;
 }
 HAPCharacteristic HAPC_ServiceLabelIndex() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ServiceLabelIndex;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1102,7 +1102,7 @@ HAPCharacteristic HAPC_ServiceLabelIndex() {
   return c;
 }
 HAPCharacteristic HAPC_ServiceLabelNamespace() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ServiceLabelNamespace;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1112,7 +1112,7 @@ HAPCharacteristic HAPC_ServiceLabelNamespace() {
   return c;
 }
 HAPCharacteristic HAPC_SetupDataStreamTransport() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SetupDataStreamTransport;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ,
@@ -1123,7 +1123,7 @@ HAPCharacteristic HAPC_SetupDataStreamTransport() {
   return c;
 }
 HAPCharacteristic HAPC_SelectedRTPStreamConfiguration() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SelectedRTPStreamConfiguration;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ,
@@ -1133,7 +1133,7 @@ HAPCharacteristic HAPC_SelectedRTPStreamConfiguration() {
   return c;
 }
 HAPCharacteristic HAPC_SetupEndpoints() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SetupEndpoints;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ,
@@ -1143,7 +1143,7 @@ HAPCharacteristic HAPC_SetupEndpoints() {
   return c;
 }
 HAPCharacteristic HAPC_SiriInputType() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SiriInputType;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1153,7 +1153,7 @@ HAPCharacteristic HAPC_SiriInputType() {
   return c;
 }
 HAPCharacteristic HAPC_SlatType() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SlatType;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1163,7 +1163,7 @@ HAPCharacteristic HAPC_SlatType() {
   return c;
 }
 HAPCharacteristic HAPC_SmokeDetected() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SmokeDetected;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1174,7 +1174,7 @@ HAPCharacteristic HAPC_SmokeDetected() {
   return c;
 }
 HAPCharacteristic HAPC_StatusActive() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.StatusActive;
   c.format = "bool";
   c.value = JSONValue(false);
@@ -1185,7 +1185,7 @@ HAPCharacteristic HAPC_StatusActive() {
   return c;
 }
 HAPCharacteristic HAPC_StatusFault() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.StatusFault;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1196,7 +1196,7 @@ HAPCharacteristic HAPC_StatusFault() {
   return c;
 }
 HAPCharacteristic HAPC_StatusJammed() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.StatusJammed;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1207,7 +1207,7 @@ HAPCharacteristic HAPC_StatusJammed() {
   return c;
 }
 HAPCharacteristic HAPC_StatusLowBattery() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.StatusLowBattery;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1218,7 +1218,7 @@ HAPCharacteristic HAPC_StatusLowBattery() {
   return c;
 }
 HAPCharacteristic HAPC_StatusTampered() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.StatusTampered;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1229,7 +1229,7 @@ HAPCharacteristic HAPC_StatusTampered() {
   return c;
 }
 HAPCharacteristic HAPC_StreamingStatus() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.StreamingStatus;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ,
@@ -1239,7 +1239,7 @@ HAPCharacteristic HAPC_StreamingStatus() {
   return c;
 }
 HAPCharacteristic HAPC_SupportedAudioStreamConfiguration() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SupportedAudioStreamConfiguration;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ];
@@ -1248,7 +1248,7 @@ HAPCharacteristic HAPC_SupportedAudioStreamConfiguration() {
   return c;
 }
 HAPCharacteristic HAPC_SupportedDataStreamTransportConfiguration() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SupportedDataStreamTransportConfiguration;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ];
@@ -1257,7 +1257,7 @@ HAPCharacteristic HAPC_SupportedDataStreamTransportConfiguration() {
   return c;
 }
 HAPCharacteristic HAPC_SupportedRTPConfiguration() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SupportedRTPConfiguration;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ];
@@ -1266,7 +1266,7 @@ HAPCharacteristic HAPC_SupportedRTPConfiguration() {
   return c;
 }
 HAPCharacteristic HAPC_SupportedVideoStreamConfiguration() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SupportedVideoStreamConfiguration;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ];
@@ -1275,7 +1275,7 @@ HAPCharacteristic HAPC_SupportedVideoStreamConfiguration() {
   return c;
 }
 HAPCharacteristic HAPC_SulphurDioxideDensity() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SulphurDioxideDensity;
   c.format = "float";
   c.value = JSONValue(0);
@@ -1286,7 +1286,7 @@ HAPCharacteristic HAPC_SulphurDioxideDensity() {
   return c;
 }
 HAPCharacteristic HAPC_SwingMode() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SwingMode;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1298,7 +1298,7 @@ HAPCharacteristic HAPC_SwingMode() {
   return c;
 }
 HAPCharacteristic HAPC_TargetAirPurifierState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetAirPurifierState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1310,7 +1310,7 @@ HAPCharacteristic HAPC_TargetAirPurifierState() {
   return c;
 }
 HAPCharacteristic HAPC_TargetFanState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetFanState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1322,7 +1322,7 @@ HAPCharacteristic HAPC_TargetFanState() {
   return c;
 }
 HAPCharacteristic HAPC_TargetTiltAngle() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetTiltAngle;
   c.format = "int";
   c.value = JSONValue(0);
@@ -1334,7 +1334,7 @@ HAPCharacteristic HAPC_TargetTiltAngle() {
   return c;
 }
 HAPCharacteristic HAPC_TargetHeaterCoolerState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetHeaterCoolerState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1346,7 +1346,7 @@ HAPCharacteristic HAPC_TargetHeaterCoolerState() {
   return c;
 }
 HAPCharacteristic HAPC_SetDuration() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.SetDuration;
   c.format = "uint32";
   c.value = JSONValue(0);
@@ -1358,7 +1358,7 @@ HAPCharacteristic HAPC_SetDuration() {
   return c;
 }
 HAPCharacteristic HAPC_TargetControlSupportedConfiguration() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetControlSupportedConfiguration;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ];
@@ -1367,7 +1367,7 @@ HAPCharacteristic HAPC_TargetControlSupportedConfiguration() {
   return c;
 }
 HAPCharacteristic HAPC_TargetControlList() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetControlList;
   c.format = "tlv8";
   c.perms = [HAPPermission.PAIRED_READ,
@@ -1378,7 +1378,7 @@ HAPCharacteristic HAPC_TargetControlList() {
   return c;
 }
 HAPCharacteristic HAPC_TargetHorizontalTiltAngle() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetHorizontalTiltAngle;
   c.format = "int";
   c.value = JSONValue(0);
@@ -1390,7 +1390,7 @@ HAPCharacteristic HAPC_TargetHorizontalTiltAngle() {
   return c;
 }
 HAPCharacteristic HAPC_TargetHumidifierDehumidifierState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetHumidifierDehumidifierState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1402,7 +1402,7 @@ HAPCharacteristic HAPC_TargetHumidifierDehumidifierState() {
   return c;
 }
 HAPCharacteristic HAPC_TargetPosition() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetPosition;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1414,7 +1414,7 @@ HAPCharacteristic HAPC_TargetPosition() {
   return c;
 }
 HAPCharacteristic HAPC_TargetDoorState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetDoorState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1426,7 +1426,7 @@ HAPCharacteristic HAPC_TargetDoorState() {
   return c;
 }
 HAPCharacteristic HAPC_TargetHeatingCoolingState() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetHeatingCoolingState;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1438,7 +1438,7 @@ HAPCharacteristic HAPC_TargetHeatingCoolingState() {
   return c;
 }
 HAPCharacteristic HAPC_TargetRelativeHumidity() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetRelativeHumidity;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1450,7 +1450,7 @@ HAPCharacteristic HAPC_TargetRelativeHumidity() {
   return c;
 }
 HAPCharacteristic HAPC_TargetTemperature() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetTemperature;
   c.format = "float";
   c.value = JSONValue(10.0);
@@ -1462,7 +1462,7 @@ HAPCharacteristic HAPC_TargetTemperature() {
   return c;
 }
 HAPCharacteristic HAPC_TemperatureDisplayUnits(ubyte value = 0x00) {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TemperatureDisplayUnits;
   c.format = "uint8";
   c.value = JSONValue(value);
@@ -1474,7 +1474,7 @@ HAPCharacteristic HAPC_TemperatureDisplayUnits(ubyte value = 0x00) {
   return c;
 }
 HAPCharacteristic HAPC_TargetVerticalTiltAngle() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.TargetVerticalTiltAngle;
   c.format = "int";
   c.value = JSONValue(0);
@@ -1486,7 +1486,7 @@ HAPCharacteristic HAPC_TargetVerticalTiltAngle() {
   return c;
 }
 HAPCharacteristic HAPC_ValveType(ubyte value = 0x00) {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.ValveType;
   c.format = "uint8";
   c.value = JSONValue(value);
@@ -1497,7 +1497,7 @@ HAPCharacteristic HAPC_ValveType(ubyte value = 0x00) {
   return c;
 }
 HAPCharacteristic HAPC_VOCDensity() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.VOCDensity;
   c.format = "float";
   c.value = JSONValue(0);
@@ -1508,7 +1508,7 @@ HAPCharacteristic HAPC_VOCDensity() {
   return c;
 }
 HAPCharacteristic HAPC_Volume() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.Volume;
   c.format = "uint8";
   c.value = JSONValue(0);
@@ -1520,7 +1520,7 @@ HAPCharacteristic HAPC_Volume() {
   return c;
 }
 HAPCharacteristic HAPC_WaterLevel() {
-  HAPCharacteristic c;
+  HAPCharacteristic c = new HAPCharacteristic();
   c.type = HAPCType.WaterLevel;
   c.format = "float";
   c.value = JSONValue(0.0);

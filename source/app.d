@@ -1,5 +1,6 @@
 import core.thread;
 import std.base64;
+import std.datetime.stopwatch;
 import std.file;
 import std.functional;
 import std.json;
@@ -44,7 +45,7 @@ void main(string[] args) {
   }
 
   // ---- LightBulb example 
-  HAPAccessory lightAcc;
+  HAPAccessory lightAcc = new HAPAccessory();
   lightAcc.addInfoService("Default-Manufacturer", 
       "Default-Model", "lamp+fan", "Default-SerialNumber", "0.0.1");
 
@@ -117,7 +118,7 @@ void main(string[] args) {
 
 
   // Thermostat
-  HAPAccessory thermo;
+  HAPAccessory thermo = new HAPAccessory();
   thermo.addInfoService("Default-Manufacturer", 
       "Default-Model", "thermo", "Default-SerialNumber", "0.0.1");
   HAPService tservice = HAPS_Thermostat();
@@ -135,9 +136,9 @@ void main(string[] args) {
     writeln("thermostat target temperature set: ", value);
     tt.value = value;
     if (value.type == JSONType.integer) {
-      ct.value = JSONValue(value.integer - 1);
+      ct.updateValue(JSONValue(value.integer - 1));
     } else if (value.type == JSONType.float_) {
-      ct.value = JSONValue(value.floating - 1);
+      ct.updateValue(JSONValue(value.floating - 1));
     }
   };
   HAPCharacteristic chcstate = HAPC_CurrentHeatingCoolingState();
@@ -164,8 +165,16 @@ void main(string[] args) {
   server.addAccessory(thermo);
 
   // ----- main loop -----
+  bool l = false;
+  StopWatch sw = StopWatch(AutoStart.yes);
   while(true) {
     server.loop();
     Thread.sleep(1.msecs);
+    // update light value with interval
+    if (sw.peek > 5000.msecs) {
+      sw.reset();
+      l = !l;
+      lon.updateValue(JSONValue(l));
+    }
   }
 }
