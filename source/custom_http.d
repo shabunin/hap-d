@@ -6,7 +6,6 @@ import std.algorithm : remove;
 import std.conv : to;
 import std.digest : toHexString;
 import std.socket : InternetAddress, Socket, SocketException, SocketSet, TcpSocket;
-import std.stdio : writeln, writefln;
 
 import std.array : Appender;
 import std.string : split, join, strip, indexOf;
@@ -76,11 +75,9 @@ class SocketListener {
   }
   void onConnectionClose(Socket sock, string addr) {
     // should be overrided
-    writeln(addr, ": closed");
   }
   void onConnectionOpen(Socket sock, string addr) {
     // should be overrided
-    writeln(addr, ": new connection");
   }
 
   void broadcast(char[] data) {
@@ -103,9 +100,7 @@ class SocketListener {
         char[BUFF_SIZE] buf;
         auto datLength = reads[i].receive(buf[]);
 
-        if (datLength == Socket.ERROR) {
-          onConnectionClose(reads[i], addrs[i]);
-        } else if (datLength != 0) {
+        if (datLength != 0) {
           onMessage(reads[i], addrs[i], buf[0..datLength]);
           continue;
         } else {
@@ -159,13 +154,20 @@ class CustomHTTP: SocketListener {
   public void switchToEncryptedMode(string addr) {
     encMode[addr] = true;
   }
+
+  public void delegate (string) onConnect = null;
+  public void delegate (string) onDisconnect = null;
   override void onConnectionOpen(Socket sock, string addr) {
-    writeln("conn opened: ", addr);
     encMode[addr] = false;
+    if (onConnect !is null) {
+      onConnect(addr);
+    }
   }
   override void onConnectionClose(Socket sock, string addr) {
-    writeln("conn closed: ", addr);
     encMode.remove(addr);
+    if (onDisconnect !is null) {
+      onDisconnect(addr);
+    }
   }
 
   // should be assigned

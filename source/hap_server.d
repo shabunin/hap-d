@@ -71,6 +71,12 @@ class HAPServer {
       events = events.remove(idx);
     }
   }
+  private void removeSubscription(string client_addr) {
+    for (int i = 0; i < events.length; i += 1) {
+      if (events[i].client_addr != client_addr) continue;
+      events = events.remove(i); i -= 1;
+    }
+  }
 
   private PrepareTimer[] pids;
   private StopWatch pidTimer;
@@ -138,7 +144,8 @@ class HAPServer {
           enc_controllerToAccessoryKey;
 
   private ubyte[] fragment;
-  private ulong in_count, out_count;
+  private ulong[string] in_count;
+  private ulong[string] out_count;
   private ubyte[][string] CLI_PUB;
 
   public void delegate(ubyte[], ubyte[], ubyte[], ubyte[]) onPair;
@@ -161,7 +168,7 @@ class HAPServer {
     writeln(response);
     writeln("-- response end --");
     ubyte[] enc = layerEncrypt(cast(ubyte[])response,
-        out_count, enc_accessoryToControllerKey);
+        out_count[client_addr], enc_accessoryToControllerKey);
     httpServer.sendByteResponse(client_addr, enc);
   }
 
@@ -183,8 +190,10 @@ class HAPServer {
       ubyte[crypto_aead_chacha20poly1305_ABYTES] auth;
       ulong authlen;
 
-      crypto_aead_chacha20poly1305_ietf_encrypt_detached(encrypted.ptr, auth.ptr, &authlen, 
-          message.ptr, message.length, leLength.ptr, leLength.length, null, nonce.ptr, key.ptr);
+      crypto_aead_chacha20poly1305_ietf_encrypt_detached(encrypted.ptr,
+          auth.ptr, &authlen, 
+          message.ptr, message.length, leLength.ptr,
+          leLength.length, null, nonce.ptr, key.ptr);
 
       offset += length;
 
@@ -196,7 +205,8 @@ class HAPServer {
     return result.dup;
   }
 
-  private ubyte[] layerDecrypt(ubyte[] packet, ref ubyte[] fragment, ref ulong count, ubyte[] key) {
+  private ubyte[] layerDecrypt(ubyte[] packet, ref ubyte[] fragment, 
+      ref ulong count, ubyte[] key) {
     if (fragment.length > 0) {
       packet = fragment ~ packet;
     }
@@ -244,7 +254,8 @@ class HAPServer {
     writeln("=======================================");
     writeln("encrypted request from remote device");
     writeln("-- request begin --");
-    ubyte[] dec = layerDecrypt(enc_message, fragment, in_count, enc_controllerToAccessoryKey);
+    ubyte[] dec = layerDecrypt(enc_message, 
+        fragment, in_count[client_addr], enc_controllerToAccessoryKey);
 
     string status;
     string[string] headers;
@@ -602,7 +613,7 @@ class HAPServer {
             cast(ubyte[])encSalt, infoRead, 32)[0..32].dup; 
         enc_controllerToAccessoryKey = hkdf_ex(enc_sharedSec.dup, 
             cast(ubyte[])encSalt, infoWrite, 32)[0..32].dup; 
-        in_count = 0; out_count = 0;
+        in_count[client_addr] = 0; out_count[client_addr] = 0;
         // change txt record
         txt["sf"] = "0";
         advertiser.setTxtRecord(serviceIndex, txt);
@@ -809,6 +820,17 @@ class HAPServer {
     httpServer = new CustomHTTP(port);
     httpServer.onHttpRequest = toDelegate(&handleHttpRequest);
     httpServer.onByteRequest = toDelegate(&handleByteRequest);
+    httpServer.onConnect = (string client_addr) {
+      writeln("conn open: ", client_addr);
+      in_count[client_addr] = 0;
+      out_count[client_addr] = 0;
+    };
+    httpServer.onDisconnect = (string client_addr) {
+      writeln("conn closed: ", client_addr);
+      removeSubscription(client_addr);
+      in_count.remove(client_addr);
+      out_count.remove(client_addr);
+    };
 
     // bridge accessory
     HAPAccessory bridge = new HAPAccessory;
@@ -854,6 +876,7 @@ class HAPServer {
       }
     }
     // process characteristic updates
+    // TODO: find closed connections
     for(int i = 0; i < events.length; i += 1) {
       auto e = events[i];
       foreach(a; accs) {

@@ -82,7 +82,7 @@ class DnsSD {
         }
         writeln("iface: ", ifaceStr);
         if (ifaceStr == iface) {
-          localHost = cast(string) host;
+          localHost = hostStr;
           ip_v4 ~= localHost;
         }
       }
