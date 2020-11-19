@@ -121,6 +121,10 @@ class HAPServer {
   }
 
   private CustomHTTP httpServer;
+  public void shutdown() {
+    httpServer.closeSockets();
+    // TODO: send mdns bye
+  }
   private SrpServer srpServer;
   private TLVStates State;
 
@@ -231,7 +235,8 @@ class HAPServer {
       count += 1;
 
       ubyte[] messageData = packet[offset+2..offset+2+realDataLength].dup;
-      ubyte[] authTagData = packet[offset+2+realDataLength..offset+2+realDataLength+16].dup;
+      ubyte[] authTagData = 
+        packet[offset+2+realDataLength..offset+2+realDataLength+16].dup;
       ubyte[] additional = packet[offset..offset+2].dup;
       ubyte[] plaintext; plaintext.length = messageData.length;
 
@@ -243,11 +248,11 @@ class HAPServer {
           additional.ptr, additional.length, // additional
           nonce.ptr, key.ptr);
 
-      result ~= plaintext.dup;
+      result ~= plaintext;
       offset += (18 + realDataLength);
     }
 
-    return result;
+    return result.dup;
   }
 
   private void handleByteRequest(string client_addr, ubyte[] enc_message) {
@@ -273,7 +278,6 @@ class HAPServer {
     string method = status.split(" ")[0];
     string path = status.split(" ")[1];
 
-    // TODO: PUT /prepare
     /***
       PUT /prepare HTTP/1.1
       [ "Content-Length":"39",
@@ -281,7 +285,6 @@ class HAPServer {
       "Content-Type":"application/hap+json"]
       {"ttl":5000,"pid":12730427263335762745}
      */
-
     if (method == "PUT" && path == "/prepare") {
       JSONValue j = parseJSON(content);
       ulong ttl, pid;
@@ -430,7 +433,6 @@ class HAPServer {
         int iid = to!int(jc["iid"].integer);
         if (("ev" in jc)) {
           // add client to subscribers
-          // TODO implement support
           // <EVENT/1.0 200 OK>
           bool subscribe = jc["ev"].boolean;
           if (subscribe) {
@@ -524,8 +526,9 @@ class HAPServer {
 
         string encSalt = "Pair-Verify-Encrypt-Salt";
         string encInfo = "Pair-Verify-Encrypt-Info";
+        size_t len = 32;
         ubyte[] outputKey = hkdf_ex(sharedSec.dup, 
-            cast(ubyte[])encSalt, encInfo, 32)[0..32]; 
+            cast(ubyte[])encSalt, encInfo, len)[0..len]; 
 
         enc_clientPublicKey = clientPublicKey.dup;
         enc_secretKey = secretKey.dup;
@@ -547,7 +550,8 @@ class HAPServer {
         ulong authlen;
         ubyte[] nonce = cast(ubyte[])[0, 0, 0, 0] ~ cast(ubyte[])"PV-Msg02";
 
-        crypto_aead_chacha20poly1305_ietf_encrypt_detached(encrypted.ptr, auth.ptr, &authlen, 
+        crypto_aead_chacha20poly1305_ietf_encrypt_detached(
+            encrypted.ptr, auth.ptr, &authlen, 
             message.ptr, message.length, null, 0,
             null, nonce.ptr, outputKey.ptr);
 
@@ -561,7 +565,8 @@ class HAPServer {
         tEnc[2].type = TLVTypes.public_key;
         tEnc[2].value = publicKey;
 
-        httpServer.sendHttpResponse(client_addr, encodeTlv(tEnc), "application/pairing+tlv8");
+        httpServer.sendHttpResponse(client_addr,
+            encodeTlv(tEnc), "application/pairing+tlv8");
         writeln("pair-verify step 1/2: sending response");
       } else if (tlvReqState == TLVStates.M3) {
         writeln("pair-verify step 2/2");
@@ -592,7 +597,7 @@ class HAPServer {
         // verify material proof clientPublicKey
         int verify_res = crypto_sign_verify_detached(proof.ptr, 
             material.ptr, material.length, clientPublicKey.ptr);
-        bool result = verify_res > -1; //verify_detached(material, proof, clientPublicKey);
+        bool result = verify_res > -1;
         writeln("signature verified: ", result);
         if (!result) {
           throw new Exception("Wrong signature");
@@ -602,17 +607,19 @@ class HAPServer {
         tRes[0].value ~= TLVStates.M4;
         // send response
         writeln("pair-verify step 2/2: sending response");
-        httpServer.sendHttpResponse(client_addr, encodeTlv(tRes), "application/pairing+tlv8");
+        httpServer.sendHttpResponse(client_addr,
+            encodeTlv(tRes), "application/pairing+tlv8");
         // "upgrade" HTTP connection 
         httpServer.switchToEncryptedMode(client_addr);
         // save encryption keys
         string encSalt = "Control-Salt";
         string infoRead = "Control-Read-Encryption-Key";
         string infoWrite = "Control-Write-Encryption-Key";
+        size_t len = 32;
         enc_accessoryToControllerKey = hkdf_ex(enc_sharedSec.dup, 
-            cast(ubyte[])encSalt, infoRead, 32)[0..32].dup; 
+            cast(ubyte[])encSalt, infoRead, len)[0..len].dup; 
         enc_controllerToAccessoryKey = hkdf_ex(enc_sharedSec.dup, 
-            cast(ubyte[])encSalt, infoWrite, 32)[0..32].dup; 
+            cast(ubyte[])encSalt, infoWrite, len)[0..len].dup; 
         in_count[client_addr] = 0; out_count[client_addr] = 0;
         // change txt record
         txt["sf"] = "0";
@@ -635,7 +642,8 @@ class HAPServer {
         ubyte[16] salt;
         randombytes_buf(salt.ptr, salt.length);
 
-        ubyte[32] key; 
+        ubyte[crypto_sign_PUBLICKEYBYTES] key; 
+
         randombytes_buf(key.ptr, key.length);
 
         ubyte[] id = cast(ubyte[])"Pair-Setup";
@@ -653,7 +661,8 @@ class HAPServer {
         tRes[2].type = TLVTypes.public_key;
         tRes[2].value = srpB;
 
-        httpServer.sendHttpResponse(client_addr, encodeTlv(tRes), "application/pairing+tlv8");
+        httpServer.sendHttpResponse(client_addr,
+            encodeTlv(tRes), "application/pairing+tlv8");
         State = TLVStates.M2;
       } else if (tlvReqState == TLVStates.M3 && State == TLVStates.M2) {
         writeln("pair setup step 2/5");
@@ -672,7 +681,8 @@ class HAPServer {
           tRes[1].type = TLVTypes.error;
           tRes[1].value ~= TLVErrors.authentication;
 
-          httpServer.sendHttpResponse(client_addr, encodeTlv(tRes), "application/pairing+tlv8");
+          httpServer.sendHttpResponse(client_addr,
+              encodeTlv(tRes), "application/pairing+tlv8");
           State = TLVStates.unknown;
           return;
         }
@@ -687,21 +697,22 @@ class HAPServer {
         tRes[1].value = M2;
 
         //res.writeBody(encodeTlv(tRes), "application/pairing+tlv8");
-        httpServer.sendHttpResponse(client_addr, encodeTlv(tRes), "application/pairing+tlv8");
+        httpServer.sendHttpResponse(client_addr,
+            encodeTlv(tRes), "application/pairing+tlv8");
       } else if (tlvReqState == TLVStates.M5 && State == TLVStates.M2) {
         writeln("pair setup step 3/5");
         ubyte[] encrypted_data = tlvReq[TLVTypes.encrypted_data].value;
         ubyte[] message_data = encrypted_data[0..$-16].dup;
         ubyte[] authtag_data = encrypted_data[$-16..$].dup;
         ubyte[] session_key = bi2buf(srpServer.return_session_key()).dup;
-        string PAIRING_3_SALT = "Pair-Setup-Encrypt-Salt";
-        string PAIRING_3_INFO = "Pair-Setup-Encrypt-Info";
-        string PAIRING_3_NONCE = "PS-Msg05";
-        size_t OUTPUT_LEN = 32; 
-        ubyte[] hap3_hkdf = hkdf_ex(session_key.dup, cast(ubyte[])PAIRING_3_SALT,
-            PAIRING_3_INFO, OUTPUT_LEN); 
+        string p3salt = "Pair-Setup-Encrypt-Salt";
+        string p3info = "Pair-Setup-Encrypt-Info";
+        ubyte[] p3nonce = 
+          cast(ubyte[])[0, 0, 0, 0] ~ cast(ubyte[]) "PS-Msg05";
+        size_t len = 32;
+        ubyte[] hap3_hkdf = hkdf_ex(session_key.dup,
+            cast(ubyte[]) p3salt, p3info, len); 
 
-        ubyte[] p3nonce = cast(ubyte[])[0, 0, 0, 0] ~ cast(ubyte[]) PAIRING_3_NONCE;
 
         ubyte[] decrypted_data; decrypted_data.length = encrypted_data.length;
         ulong decrypted_length;
@@ -722,15 +733,17 @@ class HAPServer {
         // step 4/5
         // ed25519 verify
         writeln("pair setup step 4/5");
-        string PAIRING_4_SALT = "Pair-Setup-Controller-Sign-Salt";
-        string PAIRING_4_INFO = "Pair-Setup-Controller-Sign-Info";
+        string p4salt = "Pair-Setup-Controller-Sign-Salt";
+        string p4info = "Pair-Setup-Controller-Sign-Info";
 
-        ubyte[] hap4_hkdf = hkdf_ex(session_key.dup, cast(ubyte[])PAIRING_4_SALT,
-            PAIRING_4_INFO, OUTPUT_LEN); 
+        ubyte[] hap4_hkdf = hkdf_ex(session_key.dup,
+            cast(ubyte[]) p4salt, p4info, len); 
+
         ubyte[] vdata;
         vdata = hap4_hkdf ~ client_id ~ client_public;
-        int verify_res = crypto_sign_verify_detached(client_sign.ptr, 
-            vdata.ptr, vdata.length, client_public.ptr);
+        int verify_res = crypto_sign_verify_detached(
+            client_sign.ptr, vdata.ptr,
+            vdata.length, client_public.ptr);
         bool result = verify_res == 0;
         writeln("signature verified: ", result);
         // TODO: send response if error and return
@@ -738,11 +751,12 @@ class HAPServer {
 
         // step 5/5
         writeln("pair setup step 5/5");
-        string PAIRING_5_SALT = "Pair-Setup-Accessory-Sign-Salt";
-        string PAIRING_5_INFO = "Pair-Setup-Accessory-Sign-Info";
-        string PAIRING_5_NONCE = "PS-Msg06";
-        ubyte[] hap5_hkdf = hkdf_ex(session_key.dup, cast(ubyte[])PAIRING_5_SALT,
-            PAIRING_5_INFO, OUTPUT_LEN); 
+        string p5salt = "Pair-Setup-Accessory-Sign-Salt";
+        string p5info = "Pair-Setup-Accessory-Sign-Info";
+        ubyte[] p5nonce = 
+          cast(ubyte[])[0, 0, 0, 0] ~ cast(ubyte[]) "PS-Msg06";
+        ubyte[] hap5_hkdf = hkdf_ex(session_key.dup,
+            cast(ubyte[]) p5salt, p5info, len); 
 
         //crypto_sign_keypair(ACC_PK.ptr, ACC_SK.ptr);
         crypto_sign_keypair(ACC_PK.ptr, ACC_SK.ptr);
@@ -769,9 +783,9 @@ class HAPServer {
         encrypted.length = message.length;
         ubyte[crypto_aead_chacha20poly1305_ABYTES] auth;
         ulong authlen;
-        ubyte[] p5nonce = cast(ubyte[])[0, 0, 0, 0] ~ cast(ubyte[]) PAIRING_5_NONCE;
 
-        crypto_aead_chacha20poly1305_ietf_encrypt_detached(encrypted.ptr, auth.ptr, &authlen, 
+        crypto_aead_chacha20poly1305_ietf_encrypt_detached(
+            encrypted.ptr, auth.ptr, &authlen, 
             message.ptr, message.length, null, 0,
             null, p5nonce.ptr, hap3_hkdf.ptr);
 
@@ -782,8 +796,8 @@ class HAPServer {
         tEnc[0].value ~= TLVStates.M6;
         tEnc[1].type = TLVTypes.encrypted_data;
         tEnc[1].value = enc_a;
-        //res.writeBody(encodeTlv(tEnc), "application/pairing+tlv8");
-        httpServer.sendHttpResponse(client_addr, encodeTlv(tEnc), "application/pairing+tlv8");
+        httpServer.sendHttpResponse(client_addr,
+            encodeTlv(tEnc), "application/pairing+tlv8");
         CLI_PUB[client_id.toHexString] = client_public.dup;
 
         // save iOS_LTPK and ID 
@@ -875,15 +889,15 @@ class HAPServer {
         removePid(i);
       }
     }
+
     // process characteristic updates
-    // TODO: find closed connections
     for(int i = 0; i < events.length; i += 1) {
       auto e = events[i];
       foreach(a; accs) {
         if (a.aid != e.aid) continue;
         HAPCharacteristic c = a.findCharacteristic(e.iid);
         if (!c.update_requested) continue;
-        c.update_requested = false; // will it do the trick?
+        c.update_requested = false;
 
         JSONValue[1] ju;
         ju[0] = parseJSON("{}");

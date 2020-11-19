@@ -141,7 +141,7 @@ class DnsSD {
     Record response;
     response.header.response = true;
     response.header.authoritative = true;
-    
+
     for(int qi = 0; qi < record.questions.length; qi += 1) {
       RecordQuestion q = record.questions[qi];
       // find registered service 
@@ -160,7 +160,7 @@ class DnsSD {
       if (idx.length == 0) break;
 
       MdnsService ms = services[idx[0]];
-  
+
       // for each query type return correct result
       if (ms.instanceAddr == ql) {
         // "light bulb._hap._tcp.local"
@@ -220,8 +220,8 @@ class DnsSD {
             rr.record_class = RecordClasses.int_;
             rr.ttl = ttl;
             foreach (t; ms.txt.keys) {
-			  rr.rdata.data ~= t ~ "="~ ms.txt[t] ~ "\n";
-			}
+              rr.rdata.data ~= t ~ "="~ ms.txt[t] ~ "\n";
+            }
             response.answers ~= rr;
             break;
           default:
@@ -311,8 +311,17 @@ class DnsSD {
     if(receivedLen > 0) {
       buf.length = receivedLen;
 
-      // parse
-      auto msg = parseRR(buf);
+      Record msg;
+      // sometimes parsing record goes wrong
+      // and it throws out of range errors
+      // in this case just ignore it and work next
+      try {
+        msg = parseRR(buf);
+      } catch(Exception e) {
+        return;
+      } catch (Error e) {
+        return;
+      }
 
       if (msg.questions.length > 0) {
         Record res = processQuestions(msg);
@@ -336,7 +345,7 @@ class DnsSD {
     ms.port = port;
     //ms.ip_v4 = ip_v4[0];
     ms.txt = txt;
-    
+
     // "Lightbulb 1._hap._tcp.local"
     ms.instanceAddr = instance ~ "." ~ service ~ "." ~ domain; 
     // "_hap._tcp.local"
@@ -349,10 +358,10 @@ class DnsSD {
     return to!int(services.length - 1);
   }
   public void unregisterService(int index) {
-	services = services.remove(index);
+    services = services.remove(index);
   };
   public void setTxtRecord(int index, string[string] txt) {
-	services[index].txt = txt;
+    services[index].txt = txt;
   }
   public void publish(int idx) {
     Record rr;

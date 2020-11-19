@@ -17,15 +17,15 @@ enum HAPPermission : string {
 }
 
 class HAPCharacteristic {
-  string type;
-  uint iid;
-  JSONValue value;
-  bool update_requested;
+  private uint iid;
+  public string type;
+  public JSONValue value;
+  public bool update_requested;
 
-  string format;
-  string description;
-  HAPPermission[] perms;
-  string toJSON() {
+  public string format;
+  public string description;
+  public HAPPermission[] perms;
+  public string toJSON() {
     JSONValue j = parseJSON("{}");
     j["type"] = JSONValue(type);
     j["iid"] = JSONValue(iid);
@@ -42,22 +42,22 @@ class HAPCharacteristic {
 
     return j.toJSON;
   }
-  void delegate(JSONValue) onSet;
-  JSONValue delegate() onGet;
-  void updateValue(JSONValue newValue) {
+  public void delegate(JSONValue) onSet;
+  public JSONValue delegate() onGet;
+  public void updateValue(JSONValue newValue) {
     value = newValue;
     update_requested = true;
   }
 }
 
 class HAPService {
-  string type;
-  uint iid;
-  HAPCharacteristic[] chars;
-  string[] cRequired; // required characteristics
-  string[] cOptional; // optinal
-  string[] cPresent;  // added by user
-  string toJSON() {
+  private uint iid;
+  private string type;
+  private HAPCharacteristic[] chars;
+  public string[] cRequired; // required characteristics
+  public string[] cOptional; // optinal
+  public string[] cPresent;  // added by user
+  public string toJSON() {
     JSONValue j = parseJSON("{}");
     j["type"] = JSONValue(type);
     j["iid"] = JSONValue(iid);
@@ -67,7 +67,7 @@ class HAPService {
     }
     return j.toJSON;
   }
-  void addCharacteristic(HAPCharacteristic chr) {
+  public void addCharacteristic(HAPCharacteristic chr) {
     foreach(c; chars) {
       if (!cRequired.canFind(chr.type) 
           && !cOptional.canFind(chr.type)) {
@@ -80,7 +80,7 @@ class HAPService {
     chars ~= chr;
     cPresent ~= chr.type;
   }
-  void assertCharacteristics() {
+  public void assertCharacteristics() {
     foreach(r; cRequired) {
       if (!cPresent.canFind(r)) {
         throw new Exception("Service should contain all required characteristics");
@@ -93,10 +93,10 @@ class HAPService {
 }
 
 class HAPAccessory {
-  uint aid;
-  HAPService[] services;
-  uint iid = 1; // last iid
-  string toJSON() {
+  public uint aid;
+  private HAPService[] services;
+  private uint iid = 1; // last iid
+  public string toJSON() {
     JSONValue j = parseJSON("{}");
     j["aid"] = JSONValue(aid);
     j["services"] = parseJSON("[]");
@@ -105,19 +105,19 @@ class HAPAccessory {
     }
     return j.toJSON;
   }
-  HAPService getService(uint iid) {
+  public HAPService getService(uint iid) {
     foreach(s; services) {
       if (s.iid == iid) return s;
     }
     throw new Exception("Service with given iid not found.");
   }
-  HAPService getService(string type) {
+  public HAPService getService(string type) {
     foreach(s; services) {
       if (s.type == type) return s;
     }
     throw new Exception("Service with given type not found.");
   }
-  HAPCharacteristic findCharacteristic(uint iid) {
+  public HAPCharacteristic findCharacteristic(uint iid) {
     foreach(s; services) {
       foreach(c; s.chars) {
         if (c.iid != iid) continue;
@@ -126,7 +126,7 @@ class HAPAccessory {
     }
     throw new Exception("Characteristic with given iid not found");
   }
-  HAPService createInfoService(string manufacturer, string model,
+  public HAPService createInfoService(string manufacturer, string model,
       string name, string sn) {
 
     HAPService info = HAPS_Info();
@@ -148,7 +148,7 @@ class HAPAccessory {
 
     return info;
   }
-  HAPService createInfoService(string manufacturer, string model,
+  public HAPService createInfoService(string manufacturer, string model,
       string name, string sn, string fw) {
 
     HAPService info = createInfoService(manufacturer, model, name, sn);
@@ -158,7 +158,7 @@ class HAPAccessory {
 
     return info;
   }
-  uint addService(HAPService service) {
+  public uint addService(HAPService service) {
     service.assertCharacteristics();
     foreach(s; services) {
       if (s.type == service.type) {
@@ -173,13 +173,13 @@ class HAPAccessory {
 
     return service.iid;
   }
-  uint addInfoService(string manufacturer, string model,
+  public uint addInfoService(string manufacturer, string model,
       string name, string sn) {
     HAPService info = createInfoService(manufacturer, model, name, sn);
 
     return addService(info);
   }
-  uint addInfoService(string manufacturer, string model,
+  public uint addInfoService(string manufacturer, string model,
       string name, string sn, string fw) {
     HAPService info = createInfoService(manufacturer, model, name, sn, fw);
 

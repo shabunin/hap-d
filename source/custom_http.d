@@ -85,6 +85,12 @@ class SocketListener {
       sock.send(data);
     }
   }
+  void closeSockets() {
+    foreach (sock; reads) {
+      sock.close();
+    }
+    listener.close();
+  }
 
   void processSocket() {
     socketSet.add(listener);

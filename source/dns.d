@@ -621,7 +621,7 @@ ubyte[] serializeRR(Record rec) {
       }
       rr.rdlen = to!ushort(urdata.length);
       buf.write!ushort(rr.rdlen, offset); offset += 2;
-      
+
       buf ~= urdata;
     }
     current_record_item += 1;
